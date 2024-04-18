@@ -33,7 +33,7 @@ onMounted(getWeather);
                   />
                 </div>
 
-                <WatherSummary />
+                <WatherSummary :weatherInfo="weatherInfo" />
               </div>
             </section>
             <section class="section section-right">

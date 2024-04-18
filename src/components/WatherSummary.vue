@@ -1,4 +1,11 @@
-<script setup></script>
+<script setup>
+const props = defineProps({
+  weatherInfo: {
+    type: [Object, null],
+    required: true,
+  },
+});
+</script>
 
 <template>
   <div class="summary">
