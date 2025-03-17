@@ -1,14 +1,14 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { API_KEY, BASE_URL } from "./constants/index";
-import WatherSummary from "./components/WatherSummary.vue";
+import WeatherSummary from "./components/WeatherSummary.vue";
 import Highlights from "./components/Highlights.vue";
 
 const city = ref("Kauniainen");
 const weatherInfo = ref(null);
 
 function getWeather() {
-  fetch(`${BASE_URL}?q=${city.value}&appid=${API_KEY}`)
+  fetch(`${BASE_URL}?q=${city.value}&units=metric&appid=${API_KEY}`)
     .then((response) => response.json())
     .then((data) => (weatherInfo.value = data));
 }
@@ -33,7 +33,7 @@ onMounted(getWeather);
                   />
                 </div>
 
-                <WatherSummary :weatherInfo="weatherInfo" />
+                <WeatherSummary :weatherInfo="weatherInfo" />
               </div>
             </section>
             <section class="section section-right">
