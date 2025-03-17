@@ -6,6 +6,13 @@ const props = defineProps({
     required: true,
   },
 });
+
+const today = new Date().toLocaleString("en-EN", {
+  weekday: "short",
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
 </script>
 
 <template>
@@ -25,7 +32,9 @@ const props = defineProps({
     <div class="city text-block">
       {{ weatherInfo?.name }}, {{ weatherInfo?.sys?.country }}
     </div>
-    <div class="date text-block">Thu, March 16, 2023</div>
+    <div class="date text-block">
+      {{ today }}
+    </div>
   </div>
   <div v-else class="summary-not">
     <h3>Unfortunately, we did not find this city!</h3>
