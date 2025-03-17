@@ -22,7 +22,9 @@ const props = defineProps({
         {{ capitalizeFirstLetter(weatherInfo?.weather[0].description) }}
       </div>
     </div>
-    <div class="city text-block">Paris, FR</div>
+    <div class="city text-block">
+      {{ weatherInfo?.name }}, {{ weatherInfo?.sys?.country }}
+    </div>
     <div class="date text-block">Thu, March 16, 2023</div>
   </div>
   <div v-else class="summary-not">
