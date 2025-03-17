@@ -17,7 +17,9 @@ const props = defineProps({
       <div class="temp">
         {{ Math.round(weatherInfo?.main?.temp * 2) / 2 }} °C
       </div>
-      <div class="weather-desc text-block">Thunderstorm</div>
+      <div class="weather-desc text-block">
+        {{ weatherInfo?.weather[0].description }}
+      </div>
     </div>
     <div class="city text-block">Paris, FR</div>
     <div class="date text-block">Thu, March 16, 2023</div>
