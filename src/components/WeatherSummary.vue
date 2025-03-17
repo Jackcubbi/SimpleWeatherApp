@@ -1,4 +1,5 @@
 <script setup>
+import { capitalizeFirstLetter } from "../utils";
 const props = defineProps({
   weatherInfo: {
     type: [Object, null],
@@ -18,7 +19,7 @@ const props = defineProps({
         {{ Math.round(weatherInfo?.main?.temp * 2) / 2 }} °C
       </div>
       <div class="weather-desc text-block">
-        {{ weatherInfo?.weather[0].description }}
+        {{ capitalizeFirstLetter(weatherInfo?.weather[0].description) }}
       </div>
     </div>
     <div class="city text-block">Paris, FR</div>
