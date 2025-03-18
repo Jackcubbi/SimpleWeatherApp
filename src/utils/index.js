@@ -14,3 +14,11 @@ const Pressure_Units = 0.750062;
 export const getPressureMm = (hpa) => {
   return Math.round(hpa * Pressure_Units);
 };
+
+/**
+ *
+ */
+
+export const getTime = (seconds) => {
+  return new Date(seconds * 1000).toLocaleTimeString("fi-FI");
+};
