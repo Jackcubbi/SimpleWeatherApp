@@ -38,12 +38,12 @@ onMounted(getWeather);
                 <WeatherSummary :weatherInfo="weatherInfo" />
               </div>
             </section>
-            <section v-if="weatherInfo?.weather" class="section right">
+            <section class="section right">
               <Highlights />
             </section>
           </div>
           <div v-if="weatherInfo?.weather" class="sections">
-            <Coords />
+            <Coords :coord="weatherInfo.coord" />
             <Humidity />
           </div>
         </div>
