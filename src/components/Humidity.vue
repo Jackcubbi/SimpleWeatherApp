@@ -1,7 +1,7 @@
 <script setup></script>
 
 <template>
-  <section class="section-bottom right">
+  <section class="section-bottom section-right">
     <div class="block-bottom">
       <div class="block-bottom-inner">
         <div class="block-bottom-pic pic-humidity"></div>
