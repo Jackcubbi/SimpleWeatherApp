@@ -44,7 +44,7 @@ onMounted(getWeather);
           </div>
           <div v-if="weatherInfo?.weather" class="sections">
             <Coords :coord="weatherInfo.coord" />
-            <Humidity />
+            <Humidity :humidity="weatherInfo.main.humidity" />
           </div>
         </div>
       </div>
