@@ -42,7 +42,7 @@ onMounted(getWeather);
               <Highlights />
             </section>
           </div>
-          <div class="sections bottom-sections">
+          <div v-if="weatherInfo?.weather" class="sections">
             <Coords />
             <Humidity />
           </div>
