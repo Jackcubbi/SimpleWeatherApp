@@ -34,12 +34,12 @@ onMounted(getWeather);
                     @keyup.enter="getWeather"
                   />
                 </div>
-
                 <WeatherSummary :weatherInfo="weatherInfo" />
               </div>
             </section>
+
             <section class="section right">
-              <Highlights />
+              <Highlights :weatherInfo="weatherInfo" />
             </section>
           </div>
           <div v-if="weatherInfo?.weather" class="sections">
