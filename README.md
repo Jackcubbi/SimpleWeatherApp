@@ -1,6 +1,6 @@
 # SimpleWeatherApp
 
-**SimpleWeatherApp** is a simple weather forecast application developed using Vue.js, JS and SCSS.
+**SimpleWeatherApp** is a simple weather forecast application (SPA) developed using Vue.js, JS and SCSS.
 
 ## Description
 
