@@ -1,4 +1,6 @@
 <script setup>
+import { getPressureMm } from "@/utils";
+
 const props = defineProps({
   weatherInfo: {
     type: [Object, null],
@@ -61,7 +63,9 @@ const props = defineProps({
           <div class="card-info">
             <div class="card-centered">
               <div class="info-main">
-                <div class="info-main-num">765</div>
+                <div class="info-main-num">
+                  {{ getPressureMm(weatherInfo?.main?.pressure) }}
+                </div>
                 <div class="info-main-text">mm</div>
               </div>
             </div>
