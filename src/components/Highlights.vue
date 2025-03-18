@@ -75,7 +75,9 @@ const props = defineProps({
           <div class="card-small-title">Feels like</div>
           <div class="card-small-info">
             <div class="card-small-data">
-              <div class="info-main-num">21</div>
+              <div class="info-main-num">
+                {{ Math.round(weatherInfo?.main?.feels_like * 2) / 2 }}
+              </div>
               <div class="info-main-text">°C</div>
             </div>
             <div class="card-small-hint">
@@ -110,7 +112,9 @@ const props = defineProps({
           <div class="card-small-title">Cloudiness</div>
           <div class="card-small-info">
             <div class="card-small-data">
-              <div class="info-main-num">80</div>
+              <div class="info-main-num">
+                {{ weatherInfo?.clouds?.all }}
+              </div>
               <div class="info-main-text">%</div>
             </div>
             <div class="card-small-hint">
