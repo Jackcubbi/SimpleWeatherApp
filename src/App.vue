@@ -24,7 +24,7 @@ onMounted(getWeather);
       <div class="container">
         <div class="laptop">
           <div class="sections">
-            <section class="section section-left">
+            <section class="section left">
               <div class="info">
                 <div class="city-inner">
                   <input
@@ -38,7 +38,7 @@ onMounted(getWeather);
                 <WeatherSummary :weatherInfo="weatherInfo" />
               </div>
             </section>
-            <section class="section section-right">
+            <section v-if="weatherInfo?.weather" class="section right">
               <Highlights />
             </section>
           </div>
@@ -77,7 +77,7 @@ onMounted(getWeather);
     flex-direction: column;
   }
 }
-.section-left {
+.left {
   width: 30%;
   padding-right: 10px;
 
@@ -86,7 +86,7 @@ onMounted(getWeather);
     padding-right: 0;
   }
 }
-.section-right {
+.right {
   width: 70%;
   padding-left: 10px;
 

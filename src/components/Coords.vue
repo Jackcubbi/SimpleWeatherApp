@@ -1,7 +1,7 @@
 <script setup></script>
 
 <template>
-  <section class="section-bottom section-left">
+  <section class="section-bottom left">
     <div class="block-bottom">
       <div class="block-bottom-inner">
         <div class="block-bottom-pic pic-coords"></div>
