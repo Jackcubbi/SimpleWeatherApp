@@ -14,6 +14,10 @@ const timezone = computed(() => props.weatherInfo?.timezone);
 const sunriseTime = computed(() => {
   return getTime(props.weatherInfo?.sys?.sunrise + timezone.value);
 });
+
+const sunsetTime = computed(() => {
+  return getTime(props.weatherInfo?.sys?.sunset + timezone.value);
+});
 </script>
 
 <template>
@@ -110,7 +114,7 @@ const sunriseTime = computed(() => {
               <div class="state">
                 <div class="state-pic state-pic--flipped"></div>
                 <div class="state-title">Sunset</div>
-                <div class="state-time">18:34:19</div>
+                <div class="state-time">{{ sunsetTime }}</div>
               </div>
             </div>
           </div>
