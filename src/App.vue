@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import { API_KEY, BASE_URL } from "./constants/index";
+import { capitalizeFirstLetter } from "./utils";
 import WeatherSummary from "./components/WeatherSummary.vue";
 import Highlights from "./components/Highlights.vue";
 import Coords from "./components/Coords.vue";
@@ -38,7 +39,7 @@ onMounted(getWeather);
                 <WeatherSummary v-if="!isError" :weatherInfo="weatherInfo" />
                 <div v-else class="summary-not">
                   <h4>Unfortunately, something went wrong!</h4>
-                  <p>{{ weatherInfo?.message }}</p>
+                  <p>{{ capitalizeFirstLetter(weatherInfo?.message) }}</p>
                 </div>
               </div>
             </section>
@@ -91,7 +92,7 @@ onMounted(getWeather);
     padding-right: 0;
   }
   &.section-error {
-    min-width: 235px;
+    min-width: 335px;
     width: auto;
     padding: 0;
   }
