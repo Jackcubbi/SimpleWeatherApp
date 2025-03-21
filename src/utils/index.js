@@ -16,7 +16,7 @@ export const getPressureMm = (hpa) => {
 };
 
 /**
- * Set time zone
+ * Set time zone offset
  */
 export const getTime = (seconds) => {
   return new Date(seconds * 1000).toLocaleTimeString("fi-FI", {
