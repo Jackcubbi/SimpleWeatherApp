@@ -1,5 +1,8 @@
 <script setup>
+// Importing a utility function for formatting text
 import { capitalizeFirstLetter } from "../utils";
+
+// Defining component props to receive weather data from the parent component
 const props = defineProps({
   weatherInfo: {
     type: [Object, null],
@@ -7,6 +10,7 @@ const props = defineProps({
   },
 });
 
+// Creating a formatted string for today's date
 const today = new Date().toLocaleString("en-EN", {
   weekday: "short",
   year: "numeric",
@@ -16,6 +20,7 @@ const today = new Date().toLocaleString("en-EN", {
 </script>
 
 <template>
+  <!-- Main container for weather summary -->
   <div class="summary">
     <div
       :style="`background-image: url('/weather-main/${weatherInfo?.weather[0].description}.png');`"
