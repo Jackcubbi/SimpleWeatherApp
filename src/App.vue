@@ -2,33 +2,46 @@
 import { ref, onMounted, computed } from "vue";
 import { API_KEY, BASE_URL } from "./constants/index";
 import { capitalizeFirstLetter } from "./utils";
+
+// Importing child components for displaying weather details
 import WeatherSummary from "./components/WeatherSummary.vue";
 import Highlights from "./components/Highlights.vue";
 import Coords from "./components/Coords.vue";
 import Humidity from "./components/Humidity.vue";
 
+// Reactive variable to store the city name
 const city = ref("Kauniainen");
+
+// Reactive variable to store fetched weather data
 const weatherInfo = ref(null);
+
+// Computed property to check if an error occurred (API response status is not 200)
 const isError = computed(() => weatherInfo.value?.cod !== 200);
 
+// Function to fetch weather data from the API
 function getWeather() {
   fetch(`${BASE_URL}?q=${city.value}&units=metric&appid=${API_KEY}`)
     .then((response) => response.json())
     .then((data) => (weatherInfo.value = data));
 }
 
+// Fetch weather data when the component is mounted
 onMounted(getWeather);
 </script>
 
 <template>
+  <!-- Main page wrapper -->
   <div class="page">
     <main class="main">
+      <!-- Main weather container -->
       <div class="container">
         <div class="laptop">
+          <!-- Section for input and weather summary -->
           <div class="sections">
             <section :class="['section', 'left', { 'section-error': isError }]">
               <div class="info">
                 <div class="city-inner">
+                  <!-- Search input field with two-way binding -->
                   <input
                     v-model="city"
                     type="text"
@@ -36,7 +49,10 @@ onMounted(getWeather);
                     @keyup.enter="getWeather"
                   />
                 </div>
+
+                <!-- Display weather summary if no error -->
                 <WeatherSummary v-if="!isError" :weatherInfo="weatherInfo" />
+                <!-- Display error message if API returns an error -->
                 <div v-else class="summary-not">
                   <h4>Unfortunately, something went wrong!</h4>
                   <p>{{ capitalizeFirstLetter(weatherInfo?.message) }}</p>
@@ -44,10 +60,13 @@ onMounted(getWeather);
               </div>
             </section>
 
+            <!-- Right section for additional weather highlights -->
             <section v-if="!isError" class="section right">
               <Highlights :weatherInfo="weatherInfo" />
             </section>
           </div>
+
+          <!-- Section for displaying coordinates and humidity -->
           <div v-if="!isError" class="sections">
             <Coords :coord="weatherInfo.coord" />
             <Humidity :humidity="weatherInfo.main.humidity" />
