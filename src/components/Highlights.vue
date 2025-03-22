@@ -89,9 +89,9 @@ const sunsetTime = computed(() => {
               <!-- Display pressure converted to mmHg -->
               <div class="info-main">
                 <div class="info-main-num">
-                  {{ getPressureMm(weatherInfo?.main?.pressure) }}
+                  {{ getPressureMm(weatherInfo?.main?.grnd_level) }}
                 </div>
-                <div class="info-main-text">mm</div>
+                <div class="info-main-text">mmHg</div>
               </div>
             </div>
           </div>
@@ -99,20 +99,20 @@ const sunsetTime = computed(() => {
 
         <!-- Feels Like Temperature Small Card -->
         <div class="card-small">
-          <div class="card-small-title">Feels like</div>
+          <div class="card-small-title">Sea level</div>
           <div class="card-small-info">
             <div class="card-small-data">
               <!-- Display "feels like" temperature rounded to 0.5°C increments -->
               <div class="info-main-num">
-                {{ Math.round(weatherInfo?.main?.feels_like * 2) / 2 }}
+                {{ getPressureMm(weatherInfo?.main?.sea_level) }}
               </div>
-              <div class="info-main-text">°C</div>
+              <div class="info-main-text">mmHg</div>
             </div>
             <div class="card-small-hint">
               <div
                 class="card-small-pic card-small-pic--margin card-small-pic--pressure"
               ></div>
-              <div class="card-small-text">How hot or cold it really feels</div>
+              <div class="card-small-text">The mean sea-level pressure</div>
             </div>
           </div>
         </div>
