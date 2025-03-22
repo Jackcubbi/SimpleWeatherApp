@@ -1,7 +1,8 @@
 <script setup>
-import { computed } from "vue";
-import { getPressureMm, getTime } from "@/utils";
+import { computed } from "vue"; // Import computed properties from Vue
+import { getPressureMm, getTime } from "@/utils"; // Import utility functions
 
+// Define component props
 const props = defineProps({
   weatherInfo: {
     type: [Object, null],
@@ -9,12 +10,15 @@ const props = defineProps({
   },
 });
 
+// Compute timezone from weatherInfo object
 const timezone = computed(() => props.weatherInfo?.timezone);
 
+// Compute sunrise time using the getTime utility function
 const sunriseTime = computed(() => {
   return getTime(props.weatherInfo?.sys?.sunrise + timezone.value);
 });
 
+// Compute sunset time using the getTime utility function
 const sunsetTime = computed(() => {
   return getTime(props.weatherInfo?.sys?.sunset + timezone.value);
 });
@@ -24,18 +28,22 @@ const sunsetTime = computed(() => {
   <div class="section highlights">
     <div class="title">Today's Highlights</div>
     <div class="highlights-wrapper">
+      <!-- Wind Information Card -->
       <div class="highlight">
         <div class="card">
           <div class="card-title">Wind</div>
           <div class="card-pic card-pic--wind"></div>
           <div class="card-info">
             <div class="card-justify">
+              <!-- Display wind speed rounded to one decimal place -->
               <div class="info-main">
                 <div class="info-main-num">
                   {{ Math.round(weatherInfo?.wind?.speed * 10) / 10 }}
                 </div>
                 <div class="info-main-text">m/s</div>
               </div>
+
+              <!-- Display wind direction in degrees -->
               <div class="info-main">
                 <div class="info-main-num">{{ weatherInfo?.wind?.deg }}</div>
                 <div class="info-main-text">deg</div>
@@ -43,10 +51,13 @@ const sunsetTime = computed(() => {
             </div>
           </div>
         </div>
+
+        <!-- Wind Gusts Small Card -->
         <div class="card-small">
           <div class="card-small-title">Wind gusts</div>
           <div class="card-small-info">
             <div v-if="weatherInfo?.wind?.gust" class="card-small-data">
+              <!-- Display wind gusts rounded to one decimal place -->
               <div class="info-main-num">
                 {{ Math.round(weatherInfo?.wind?.gust * 10) / 10 }}
               </div>
@@ -67,12 +78,15 @@ const sunsetTime = computed(() => {
           </div>
         </div>
       </div>
+
+      <!-- Pressure Information Card -->
       <div class="highlight">
         <div class="card">
           <div class="card-title">Pressure</div>
           <div class="card-pic card-pic--pressure"></div>
           <div class="card-info">
             <div class="card-centered">
+              <!-- Display pressure converted to mmHg -->
               <div class="info-main">
                 <div class="info-main-num">
                   {{ getPressureMm(weatherInfo?.main?.pressure) }}
@@ -82,10 +96,13 @@ const sunsetTime = computed(() => {
             </div>
           </div>
         </div>
+
+        <!-- Feels Like Temperature Small Card -->
         <div class="card-small">
           <div class="card-small-title">Feels like</div>
           <div class="card-small-info">
             <div class="card-small-data">
+              <!-- Display "feels like" temperature rounded to 0.5°C increments -->
               <div class="info-main-num">
                 {{ Math.round(weatherInfo?.main?.feels_like * 2) / 2 }}
               </div>
@@ -100,6 +117,8 @@ const sunsetTime = computed(() => {
           </div>
         </div>
       </div>
+
+      <!-- Sunrise & Sunset Information Card -->
       <div class="highlight">
         <div class="card">
           <div class="card-title">Sunrise and sunset</div>
@@ -109,20 +128,25 @@ const sunsetTime = computed(() => {
               <div class="state">
                 <div class="state-pic"></div>
                 <div class="state-title">Sunrise</div>
+                <!-- Display computed sunrise time -->
                 <div class="state-time">{{ sunriseTime }}</div>
               </div>
               <div class="state">
                 <div class="state-pic state-pic--flipped"></div>
                 <div class="state-title">Sunset</div>
+                <!-- Display computed sunset time -->
                 <div class="state-time">{{ sunsetTime }}</div>
               </div>
             </div>
           </div>
         </div>
+
+        <!-- Cloudiness Small Card -->
         <div class="card-small">
           <div class="card-small-title">Cloudiness</div>
           <div class="card-small-info">
             <div class="card-small-data">
+              <!-- Display cloud coverage in percentage -->
               <div class="info-main-num">
                 {{ weatherInfo?.clouds?.all }}
               </div>
