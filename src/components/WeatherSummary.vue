@@ -27,9 +27,28 @@ const today = new Date().toLocaleString("en-EN", {
       class="pic-main"
     ></div>
     <div class="weather">
-      <div class="temp">
-        {{ Math.round(weatherInfo?.main?.temp * 2) / 2 }} °C
+      <div class="temperature">
+        <div class="temp">
+          {{ Math.round(weatherInfo?.main?.temp * 2) / 2 }} °C
+          <!-- Display "feels like" temperature rounded to 0.5°C increments -->
+        </div>
+        <div class="card-small feels-like">
+          <div class="card-small-info">
+            <div class="card-small-data">
+              <!-- Display "feels like" temperature rounded to 0.5°C increments -->
+              <div class="card-small-title">Feels like:</div>
+              <div class="info-main-num">
+                {{ Math.round(weatherInfo?.main?.feels_like * 2) / 2 }}
+              </div>
+              <div class="info-main-text">°C</div>
+            </div>
+            <div class="card-small-hint">
+              <div class="card-small-text">How hot or cold it really feels</div>
+            </div>
+          </div>
+        </div>
       </div>
+
       <div class="weather-desc text-block">
         {{ capitalizeFirstLetter(weatherInfo?.weather[0].description) }}
       </div>
@@ -59,10 +78,84 @@ const today = new Date().toLocaleString("en-EN", {
   margin: 0 0 20px;
   padding: 20px 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+  .temperature {
+    display: flex;
+    .card-small {
+      padding: 0 16px;
+      background-size: cover;
+      border-radius: 8px;
+
+      &-title {
+        font-size: 13px;
+        margin-right: 5px;
+      }
+      &-info {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+
+        @media (max-width: 1199px) {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+      &-pic {
+        width: 20px;
+        height: 20px;
+        background-repeat: no-repeat;
+        background-position: 50% 50%;
+        background-size: contain;
+
+        @media (max-width: 1199px) {
+          display: none;
+        }
+
+        &--margin {
+          width: 16px;
+          height: 16px;
+          margin-bottom: 3px;
+        }
+        &--wind {
+          background-image: url("/src/assets/img/gusts.svg");
+        }
+        &--pressure {
+          background-image: url("/src/assets/img/humidity.svg");
+        }
+        &--sun {
+          background-image: url("/src/assets/img/cloud.svg");
+        }
+      }
+      &-data {
+        display: flex;
+        align-items: center;
+
+        @media (max-width: 1199px) {
+          width: 100%;
+          padding-top: 8px;
+        }
+      }
+      &-hint {
+        @media (max-width: 1199px) {
+          width: 100%;
+        }
+      }
+      &-text {
+        font-size: 11px;
+        line-height: 1.2;
+        color: rgba($white, 0.6);
+
+        @media (max-width: 1199px) {
+          min-height: 22px;
+          font-size: 9px;
+        }
+      }
+    }
+  }
 }
 .temp {
   padding-bottom: 8px;
   font-size: 32px;
+  width: 60%;
 }
 .text-block {
   position: relative;
