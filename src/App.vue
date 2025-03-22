@@ -91,8 +91,10 @@ onMounted(getWeather);
 .laptop {
   width: 100%;
   padding: 20px;
-  background-color: #0e100f;
   border-radius: 25px;
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  box-shadow: 0 5px 50px rgba(0, 0, 0, 0.5);
 }
 .sections {
   display: flex;
