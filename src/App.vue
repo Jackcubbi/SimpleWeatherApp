@@ -152,6 +152,8 @@ onMounted(getWeather);
   background: url("./assets/img/gradient-1.jpg") no-repeat 50% 50%;
   background-size: cover;
   border-radius: 25px;
+  opacity: 0.95;
+  box-shadow: 0 0 10px #fff;
 }
 .search {
   width: 100%;

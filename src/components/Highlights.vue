@@ -171,6 +171,8 @@ const sunsetTime = computed(() => {
   background: url("/src/assets/img/gradient-4.jpg") no-repeat 0% 0%;
   background-size: cover;
   border-radius: 25px;
+  opacity: 0.95;
+  box-shadow: 0 0 10px #fff;
 
   &-wrapper {
     display: flex;
