@@ -32,6 +32,10 @@ onMounted(getWeather);
 <template>
   <!-- Main page wrapper -->
   <div class="page">
+    <div
+      :style="`background-image: url('/src/assets/img/weather/${weatherInfo?.weather[0].description}.jpg');`"
+      class="main-bgd-image"
+    ></div>
     <main class="main">
       <!-- Main weather container -->
       <div class="container">
@@ -85,8 +89,16 @@ onMounted(getWeather);
   align-items: center;
   min-height: 100vh;
   padding: 20px 0;
-  background: url(./assets/img/bg-cold.jpg) no-repeat 50% 50%;
-  background-size: cover;
+
+  .main-bgd-image {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    transition: ease-in-out 1s;
+  }
 }
 .laptop {
   width: 100%;

@@ -99,32 +99,6 @@ const today = new Date().toLocaleString("en-EN", {
           align-items: flex-start;
         }
       }
-      &-pic {
-        width: 20px;
-        height: 20px;
-        background-repeat: no-repeat;
-        background-position: 50% 50%;
-        background-size: contain;
-
-        @media (max-width: 1199px) {
-          display: none;
-        }
-
-        &--margin {
-          width: 16px;
-          height: 16px;
-          margin-bottom: 3px;
-        }
-        &--wind {
-          background-image: url("/src/assets/img/gusts.svg");
-        }
-        &--pressure {
-          background-image: url("/src/assets/img/humidity.svg");
-        }
-        &--sun {
-          background-image: url("/src/assets/img/cloud.svg");
-        }
-      }
       &-data {
         display: flex;
         align-items: center;
