@@ -53,6 +53,7 @@ onMounted(getWeather);
                     class="search"
                     @keyup.enter="getWeather"
                   />
+                  <button class="search-btn" @click="getWeather"></button>
                 </div>
 
                 <!-- Display weather summary if no error -->
@@ -145,20 +146,21 @@ onMounted(getWeather);
   position: relative;
   display: inline-block;
   width: 100%;
-
-  &::after {
+  .search-btn {
     content: "";
     position: absolute;
-    top: 0;
+    top: -13px;
     right: 10px;
-    width: 25px;
-    height: 25px;
+    width: 40px;
+    height: 40px;
     background: url("./assets/img/search.svg") no-repeat 50% 50%;
     background-size: contain;
     transform: translateY(50%);
+    border-radius: 10px;
     cursor: pointer;
   }
 }
+
 .info {
   height: 100%;
   padding: 16px;
