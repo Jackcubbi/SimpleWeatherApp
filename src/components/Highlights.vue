@@ -26,10 +26,10 @@ const sunsetTime = computed(() => {
 
 onMounted(() => {
   const animations = [
-    { id: "card-pic-wind", path: "img/wind.json" },
+    { id: "card-pic-wind", path: "assets/img/wind.json" },
     {
       id: "card-pic-sunrise-sunset",
-      path: "img/sunrise-sunset.json",
+      path: "assets/img/sunrise-sunset.json",
     },
   ];
 

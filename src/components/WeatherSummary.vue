@@ -23,7 +23,7 @@ const today = new Date().toLocaleString("en-EN", {
   <!-- Main container for weather summary -->
   <div class="summary">
     <div
-      :style="`background-image: url('img/weather-main/${weatherInfo?.weather[0].description}.png');`"
+      :style="`background-image: url('assets/img/weather-main/${weatherInfo?.weather[0].description}.png');`"
       class="pic-main"
     ></div>
     <div class="weather">
@@ -152,12 +152,12 @@ const today = new Date().toLocaleString("en-EN", {
 }
 .weather-desc {
   &::before {
-    background-image: url("../src/assets/img/weather.svg");
+    background-image: url("../assets/img/weather.svg");
   }
 }
 .city {
   &::before {
-    background-image: url("../src/assets/img/location.svg");
+    background-image: url("../assets/img/location.svg");
   }
 }
 .date {
@@ -165,7 +165,7 @@ const today = new Date().toLocaleString("en-EN", {
     left: 2px;
     width: 15px;
     height: 15px;
-    background-image: url("/src/assets/img/calendar.svg");
+    background-image: url("../assets/img/calendar.svg");
   }
 }
 </style>
