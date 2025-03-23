@@ -1,5 +1,6 @@
 <script setup>
-import { computed } from "vue"; // Import computed properties from Vue
+import lottie from "lottie-web";
+import { computed, onMounted } from "vue"; // Import computed properties from Vue
 import { getPressureMm, getTime } from "@/utils"; // Import utility functions
 
 // Define component props
@@ -22,6 +23,30 @@ const sunriseTime = computed(() => {
 const sunsetTime = computed(() => {
   return getTime(props.weatherInfo?.sys?.sunset + timezone.value);
 });
+
+onMounted(() => {
+  const animations = [
+    { id: "card-pic-wind", path: "/src/assets/img/wind.json" },
+    {
+      id: "card-pic-sunrise-sunset",
+      path: "/src/assets/img/sunrise-sunset.json",
+    },
+  ];
+
+  animations.forEach(({ id, path }) => {
+    const container = document.getElementById(id);
+    if (container) {
+      lottie.loadAnimation({
+        container,
+        path,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+        name: "demo animation",
+      });
+    }
+  });
+});
 </script>
 
 <template>
@@ -32,7 +57,8 @@ const sunsetTime = computed(() => {
       <div class="highlight">
         <div class="card">
           <div class="card-title">Wind</div>
-          <div class="card-pic card-pic--wind"></div>
+          <div class="card-pic" id="card-pic-wind"></div>
+
           <div class="card-info">
             <div class="card-justify">
               <!-- Display wind speed rounded to one decimal place -->
@@ -122,7 +148,7 @@ const sunsetTime = computed(() => {
       <div class="highlight">
         <div class="card">
           <div class="card-title">Sunrise and sunset</div>
-          <div class="card-pic card-pic--sun"></div>
+          <div class="card-pic" id="card-pic-sunrise-sunset"></div>
           <div class="card-info">
             <div class="states">
               <div class="state">
@@ -236,8 +262,8 @@ const sunsetTime = computed(() => {
     background-position: 50% 50%;
     background-size: contain;
 
-    &--wind {
-      background-image: url("/src/assets/img/equalizer (2).png");
+    &-wind {
+      background-image: url("/src/assets/img/equalizer.png");
     }
     &--pressure {
       background-image: url("/src/assets/img/barometer.png");
