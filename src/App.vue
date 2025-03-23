@@ -42,7 +42,7 @@ onMounted(getWeather);
   <div class="page">
     <div
       v-if="!isError"
-      :style="`background-image: url('/main-backgrounds/${weatherInfo?.weather[0].description}.jpg');`"
+      :style="`background-image: url('img/main-backgrounds/${weatherInfo?.weather[0].description}.jpg');`"
       class="main-bgd-image"
     ></div>
     <main class="main">
@@ -108,6 +108,7 @@ onMounted(getWeather);
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
+    background-attachment: fixed;
     transition: ease-in-out 1s;
   }
 }

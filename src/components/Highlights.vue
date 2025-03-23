@@ -26,10 +26,10 @@ const sunsetTime = computed(() => {
 
 onMounted(() => {
   const animations = [
-    { id: "card-pic-wind", path: "/src/assets/img/wind.json" },
+    { id: "card-pic-wind", path: "img/wind.json" },
     {
       id: "card-pic-sunrise-sunset",
-      path: "/src/assets/img/sunrise-sunset.json",
+      path: "img/sunrise-sunset.json",
     },
   ];
 
@@ -262,14 +262,8 @@ onMounted(() => {
     background-position: 50% 50%;
     background-size: contain;
 
-    &-wind {
-      background-image: url("/src/assets/img/equalizer.png");
-    }
     &--pressure {
       background-image: url("/src/assets/img/barometer.png");
-    }
-    &--sun {
-      background-image: url("/src/assets/img/sun-moving.png");
     }
   }
 }
