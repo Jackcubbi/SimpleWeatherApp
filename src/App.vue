@@ -17,9 +17,17 @@ const weatherInfo = ref(null);
 
 // Computed property to check if an error occurred (API response status is not 200)
 const isError = computed(() => weatherInfo.value?.cod !== 200);
+const errorMessage = ref("");
 
 // Function to fetch weather data from the API
 function getWeather() {
+  if (!city.value.trim()) {
+    errorMessage.value = "Enter the city name!";
+    return;
+  }
+
+  errorMessage.value = ""; // Clear the error message
+
   fetch(`${BASE_URL}?q=${city.value}&units=metric&appid=${API_KEY}`)
     .then((response) => response.json())
     .then((data) => (weatherInfo.value = data));
@@ -54,6 +62,7 @@ onMounted(getWeather);
                     @keyup.enter="getWeather"
                   />
                   <button class="search-btn" @click="getWeather"></button>
+                  <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
                 </div>
 
                 <!-- Display weather summary if no error -->
@@ -192,5 +201,12 @@ onMounted(getWeather);
   @media (max-width: 767px) {
     width: 100%;
   }
+}
+
+.error {
+  color: rgb(221, 219, 85);
+  font-size: 14px;
+  text-align: center;
+  margin-top: 5px;
 }
 </style>
