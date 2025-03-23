@@ -162,7 +162,11 @@ onMounted(getWeather);
 .info {
   height: 100%;
   padding: 16px;
-  background: url("./assets/img/gradient-1.jpg") no-repeat 50% 50%;
+  background: radial-gradient(
+    circle,
+    rgba(2, 0, 36, 1) 0%,
+    rgba(79, 29, 0, 1) 100%
+  );
   background-size: cover;
   border-radius: 25px;
   opacity: 0.95;

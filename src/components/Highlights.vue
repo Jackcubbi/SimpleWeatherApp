@@ -168,7 +168,11 @@ const sunsetTime = computed(() => {
 <style lang="scss" scoped>
 .highlights {
   padding: 28px 16px 16px;
-  background: url("/src/assets/img/gradient-4.jpg") no-repeat 0% 0%;
+  background: radial-gradient(
+    circle,
+    rgba(2, 0, 36, 1) 0%,
+    rgba(79, 29, 0, 1) 100%
+  );
   background-size: cover;
   border-radius: 25px;
   opacity: 0.95;
@@ -197,8 +201,9 @@ const sunsetTime = computed(() => {
 .card {
   min-height: 230px;
   padding: 16px;
-  background: url("/src/assets/img/gradient-2.jpg") no-repeat 50% 50%;
   background-size: cover;
+  border-right: 1px solid;
+  border-left: 1px solid;
   border-radius: 8px;
 
   @media (max-width: 1199px) {
@@ -311,8 +316,8 @@ const sunsetTime = computed(() => {
 .card-small {
   margin-top: 12px;
   padding: 12px 16px;
-  background: url("/src/assets/img/gradient-2.jpg") no-repeat 50% 50%;
   background-size: cover;
+  border: 1px solid;
   border-radius: 8px;
 
   &-title {
