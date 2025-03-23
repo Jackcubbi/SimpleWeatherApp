@@ -33,6 +33,7 @@ onMounted(getWeather);
   <!-- Main page wrapper -->
   <div class="page">
     <div
+      v-if="!isError"
       :style="`background-image: url('/src/assets/img/weather/${weatherInfo?.weather[0].description}.jpg');`"
       class="main-bgd-image"
     ></div>
