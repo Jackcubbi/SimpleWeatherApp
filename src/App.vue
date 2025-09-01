@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
-import { API_KEY, BASE_URL } from "./constants/index";
+import { API_KEY, WEATHER_URL, FORECAST_URL } from "./constants/index";
 import { capitalizeFirstLetter } from "./utils";
 
 // Importing child components for displaying weather details
@@ -8,18 +8,21 @@ import WeatherSummary from "./components/WeatherSummary.vue";
 import Highlights from "./components/Highlights.vue";
 import Coords from "./components/Coords.vue";
 import Humidity from "./components/Humidity.vue";
+import WeatherForecast from "./components/WeatherForecast.vue";
 
 // Reactive variable to store the city name
 const city = ref("Kauniainen");
 
 // Reactive variable to store fetched weather data
 const weatherInfo = ref(null);
+// Reactive variable to store forecast data
+const forecastInfo = ref(null);
 
 // Computed property to check if an error occurred (API response status is not 200)
 const isError = computed(() => weatherInfo.value?.cod !== 200);
 const errorMessage = ref("");
 
-// Function to fetch weather data from the API
+// Function to fetch current weather data from the API
 function getWeather() {
   if (!city.value.trim()) {
     errorMessage.value = "Enter the city name!";
@@ -28,9 +31,22 @@ function getWeather() {
 
   errorMessage.value = ""; // Clear the error message
 
-  fetch(`${BASE_URL}?q=${city.value}&units=metric&appid=${API_KEY}`)
+  fetch(`${WEATHER_URL}?q=${city.value}&units=metric&appid=${API_KEY}`)
     .then((response) => response.json())
-    .then((data) => (weatherInfo.value = data));
+    .then((data) => {
+      weatherInfo.value = data;
+      // If weather data is successful, also fetch forecast
+      if (data.cod === 200) {
+        getForecast();
+      }
+    });
+}
+
+// Function to fetch 5-day forecast data from the API
+function getForecast() {
+  fetch(`${FORECAST_URL}?q=${city.value}&units=metric&appid=${API_KEY}`)
+    .then((response) => response.json())
+    .then((data) => (forecastInfo.value = data));
 }
 
 // Fetch weather data when the component is mounted
@@ -56,9 +72,11 @@ onMounted(getWeather);
                 <div class="city-inner">
                   <!-- Search input field with two-way binding -->
                   <input
+                    id="city-search-input"
                     v-model="city"
                     type="text"
                     class="search"
+                    placeholder="Enter city name..."
                     @keyup.enter="getWeather"
                   />
                   <button class="search-btn" @click="getWeather"></button>
@@ -79,6 +97,11 @@ onMounted(getWeather);
             <section v-if="!isError" class="section right">
               <Highlights :weatherInfo="weatherInfo" />
             </section>
+          </div>
+
+          <!-- Section for displaying 5 days forecast -->
+          <div v-if="!isError" class="sections">
+            <WeatherForecast :forecastInfo="forecastInfo" />
           </div>
 
           <!-- Section for displaying coordinates and humidity -->
