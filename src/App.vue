@@ -77,6 +77,7 @@ onMounted(getWeather);
                     type="text"
                     class="search"
                     placeholder="Enter city name..."
+                    autocomplete="off"
                     @keyup.enter="getWeather"
                   />
                   <button class="search-btn" @click="getWeather"></button>
