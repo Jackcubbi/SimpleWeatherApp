@@ -73,6 +73,11 @@ const formatDate = (timestamp) => {
     day: "numeric",
   });
 };
+
+// Format temperature with proper rounding
+const formatTemperature = (temp) => {
+  return Math.round(temp);
+};
 </script>
 
 <template>
