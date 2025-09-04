@@ -102,10 +102,10 @@ const formatTemperature = (temp) => {
           ></div>
           <div class="forecast-temp">
             <div class="temp-max">
-              {{ Math.round(forecast.main.temp_max) }}°
+              {{ formatTemperature(forecast.main.temp_max) }}°
             </div>
             <div class="temp-min">
-              {{ Math.round(forecast.main.temp_min) }}°
+              {{ formatTemperature(forecast.main.temp_min) }}°
             </div>
           </div>
           <div class="forecast-desc">
