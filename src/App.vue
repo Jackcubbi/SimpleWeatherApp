@@ -39,6 +39,10 @@ function getWeather() {
       if (data.cod === 200) {
         getForecast();
       }
+    })
+    .catch((error) => {
+      console.error('Weather API error:', error);
+      errorMessage.value = "Failed to fetch weather data";
     });
 }
 
