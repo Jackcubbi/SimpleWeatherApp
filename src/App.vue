@@ -50,7 +50,10 @@ function getWeather() {
 function getForecast() {
   fetch(`${FORECAST_URL}?q=${city.value}&units=metric&appid=${API_KEY}`)
     .then((response) => response.json())
-    .then((data) => (forecastInfo.value = data));
+    .then((data) => (forecastInfo.value = data))
+    .catch((error) => {
+      console.error('Forecast API error:', error);
+    });
 }
 
 // Fetch weather data when the component is mounted
