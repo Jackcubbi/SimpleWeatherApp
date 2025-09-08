@@ -3,12 +3,11 @@
 SimpleWeatherApp is a simple weather forecast application (SPA) developed using Vue.js, JS, and SCSS. 
 It also features Lottie animations for a experience and integrates OpenWeatherMap API to fetch real-time weather data.
 
-## Description
-
-The application allows users to get up-to-date weather information for a selected city. It provides the following features:
+## Features
 
 - **City search:** Enter a city name to get the weather forecast.
 - **Current weather display:** Temperature, humidity, wind speed, and weather conditions description.
+- **5-day weather forecast:** Detailed forecast with daily high/low temperatures and weather conditions.
 - **Multi-day forecast:** Weather information for the upcoming days.
 - **Open API Integration:** The application uses an open API key to fetch weather data from OpenWeatherMap.
 - **Lottie Animations:** Smooth and lightweight animations enhance the user experience.
