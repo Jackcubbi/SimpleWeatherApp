@@ -151,6 +151,7 @@ const formatTemperature = (temp) => {
   @media (max-width: 767px) {
     flex-direction: column;
     gap: 8px;
+    padding: 0 8px;
   }
 }
 
