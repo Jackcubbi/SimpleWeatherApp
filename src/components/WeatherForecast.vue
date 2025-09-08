@@ -139,8 +139,9 @@ const formatTemperature = (temp) => {
   color: $white;
   font-size: 18px;
   font-weight: 700;
-  margin: 0 0 16px 0;
+  margin: 0 0 20px 0;
   text-align: center;
+  letter-spacing: 0.5px;
 }
 
 .forecast-cards {
