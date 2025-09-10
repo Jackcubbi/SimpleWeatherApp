@@ -19,6 +19,24 @@ export const getPressureMm = (hpa) => {
  */
 export const getTime = (seconds) => {
   return new Date(seconds * 1000).toLocaleTimeString("fi-FI", {
-    timeZone: "Atlantic/Reykjavik",
+    timeZone: "Europe/Helsinki",
   });
+};
+
+/**
+ * Debounce function to limit API calls
+ * @param {Function} func - Function to debounce
+ * @param {number} wait - Wait time in milliseconds
+ * @returns {Function} Debounced function
+ */
+export const debounce = (func, wait = 500) => {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
 };
