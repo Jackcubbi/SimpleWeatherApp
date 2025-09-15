@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import { API_KEY, WEATHER_URL, FORECAST_URL } from "./constants/index";
-import { capitalizeFirstLetter } from "./utils";
+import { capitalizeFirstLetter, debounce } from "./utils";
 
 // Importing child components for displaying weather details
 import WeatherSummary from "./components/WeatherSummary.vue";
@@ -15,12 +15,58 @@ const city = ref("Kauniainen");
 
 // Reactive variable to store fetched weather data
 const weatherInfo = ref(null);
-// Reactive variable to store forecast data
-const forecastInfo = ref(null);
+// Reactive variable to store forecast data with default structure
+const forecastInfo = ref({ list: [] });
+// Loading states
+const isLoading = ref(false);
+const isForecastLoading = ref(false);
+// Search history
+const searchHistory = ref([]);
+const showHistory = ref(false);
 
 // Computed property to check if an error occurred (API response status is not 200)
 const isError = computed(() => weatherInfo.value?.cod !== 200);
 const errorMessage = ref("");
+
+// Load search history from localStorage on mount
+function loadSearchHistory() {
+  const stored = localStorage.getItem("weatherSearchHistory");
+  if (stored) {
+    searchHistory.value = JSON.parse(stored);
+  }
+}
+
+// Save search to history
+function saveToHistory(cityName) {
+  if (!cityName) return;
+
+  // Remove duplicates and add to beginning
+  searchHistory.value = [
+    cityName,
+    ...searchHistory.value.filter(
+      (c) => c.toLowerCase() !== cityName.toLowerCase()
+    ),
+  ].slice(0, 5); // Keep only last 5 searches
+
+  localStorage.setItem(
+    "weatherSearchHistory",
+    JSON.stringify(searchHistory.value)
+  );
+}
+
+// Select city from history
+function selectFromHistory(cityName) {
+  city.value = cityName;
+  showHistory.value = false;
+  getWeather();
+}
+
+// Hide history dropdown with delay
+function hideHistory() {
+  setTimeout(() => {
+    showHistory.value = false;
+  }, 200);
+}
 
 // Function to fetch current weather data from the API
 function getWeather() {
@@ -30,6 +76,7 @@ function getWeather() {
   }
 
   errorMessage.value = ""; // Clear the error message
+  isLoading.value = true;
 
   fetch(`${WEATHER_URL}?q=${city.value}&units=metric&appid=${API_KEY}`)
     .then((response) => response.json())
@@ -37,27 +84,113 @@ function getWeather() {
       weatherInfo.value = data;
       // If weather data is successful, also fetch forecast
       if (data.cod === 200) {
+        saveToHistory(data.name); // Save to history
         getForecast();
       }
     })
     .catch((error) => {
       console.error("Weather API error:", error);
       errorMessage.value = "Failed to fetch weather data";
+    })
+    .finally(() => {
+      isLoading.value = false;
     });
 }
 
 // Function to fetch 5-day forecast data from the API
 function getForecast() {
+  isForecastLoading.value = true;
   fetch(`${FORECAST_URL}?q=${city.value}&units=metric&appid=${API_KEY}`)
     .then((response) => response.json())
     .then((data) => (forecastInfo.value = data))
     .catch((error) => {
       console.error("Forecast API error:", error);
+    })
+    .finally(() => {
+      isForecastLoading.value = false;
     });
 }
 
+// Debounced search function to avoid excessive API calls
+const debouncedSearch = debounce(getWeather, 800);
+
+// Function to get weather by coordinates (for geolocation)
+function getWeatherByCoords(lat, lon) {
+  isLoading.value = true;
+  errorMessage.value = "";
+
+  fetch(`${WEATHER_URL}?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`)
+    .then((response) => response.json())
+    .then((data) => {
+      weatherInfo.value = data;
+      if (data.cod === 200) {
+        city.value = data.name; // Update city name
+        saveToHistory(data.name);
+        getForecastByCoords(lat, lon);
+      }
+    })
+    .catch((error) => {
+      console.error("Weather API error:", error);
+      errorMessage.value = "Failed to fetch weather data";
+    })
+    .finally(() => {
+      isLoading.value = false;
+    });
+}
+
+// Function to get forecast by coordinates
+function getForecastByCoords(lat, lon) {
+  isForecastLoading.value = true;
+  fetch(`${FORECAST_URL}?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`)
+    .then((response) => response.json())
+    .then((data) => (forecastInfo.value = data))
+    .catch((error) => {
+      console.error("Forecast API error:", error);
+    })
+    .finally(() => {
+      isForecastLoading.value = false;
+    });
+}
+
+// Function to use geolocation
+function useMyLocation() {
+  if (!navigator.geolocation) {
+    errorMessage.value = "Geolocation is not supported by your browser";
+    return;
+  }
+
+  isLoading.value = true;
+  errorMessage.value = "";
+
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      const { latitude, longitude } = position.coords;
+      getWeatherByCoords(latitude, longitude);
+    },
+    (error) => {
+      isLoading.value = false;
+      switch (error.code) {
+        case error.PERMISSION_DENIED:
+          errorMessage.value = "Location permission denied";
+          break;
+        case error.POSITION_UNAVAILABLE:
+          errorMessage.value = "Location information unavailable";
+          break;
+        case error.TIMEOUT:
+          errorMessage.value = "Location request timed out";
+          break;
+        default:
+          errorMessage.value = "An unknown error occurred";
+      }
+    }
+  );
+}
+
 // Fetch weather data when the component is mounted
-onMounted(getWeather);
+onMounted(() => {
+  loadSearchHistory();
+  getWeather();
+});
 </script>
 
 <template>
@@ -86,15 +219,47 @@ onMounted(getWeather);
                     placeholder="Enter city name..."
                     autocomplete="off"
                     @keyup.enter="getWeather"
+                    @focus="showHistory = true"
+                    @blur="hideHistory"
                   />
+                  <button
+                    class="location-btn"
+                    @click="useMyLocation"
+                    title="Use my location"
+                  >
+                    📍
+                  </button>
                   <button class="search-btn" @click="getWeather"></button>
+
+                  <!-- Search History Dropdown -->
+                  <div
+                    v-if="showHistory && searchHistory.length > 0"
+                    class="history-dropdown"
+                  >
+                    <div class="history-title">Recent Searches</div>
+                    <div
+                      v-for="(historyCity, index) in searchHistory"
+                      :key="index"
+                      class="history-item"
+                      @click="selectFromHistory(historyCity)"
+                    >
+                      {{ historyCity }}
+                    </div>
+                  </div>
+
                   <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
+                  <p v-if="isLoading" class="loading">
+                    Loading weather data...
+                  </p>
                 </div>
 
                 <!-- Display weather summary if no error -->
-                <WeatherSummary v-if="!isError" :weatherInfo="weatherInfo" />
+                <WeatherSummary
+                  v-if="!isError && !isLoading"
+                  :weatherInfo="weatherInfo"
+                />
                 <!-- Display error message if API returns an error -->
-                <div v-else class="summary-not">
+                <div v-else-if="isError && !isLoading" class="summary-not">
                   <h4>Unfortunately, something went wrong!</h4>
                   <p>{{ capitalizeFirstLetter(weatherInfo?.message) }}</p>
                 </div>
@@ -102,18 +267,24 @@ onMounted(getWeather);
             </section>
 
             <!-- Right section for additional weather highlights -->
-            <section v-if="!isError" class="section right">
+            <section v-if="!isError && !isLoading" class="section right">
               <Highlights :weatherInfo="weatherInfo" />
             </section>
           </div>
 
           <!-- Section for displaying 5 days forecast -->
-          <div v-if="!isError" class="sections">
-            <WeatherForecast :forecastInfo="forecastInfo" />
+          <div v-if="!isError && !isLoading" class="sections">
+            <WeatherForecast
+              v-if="!isForecastLoading && forecastInfo.list.length > 0"
+              :forecastInfo="forecastInfo"
+            />
+            <p v-if="isForecastLoading" class="forecast-loading">
+              Loading forecast...
+            </p>
           </div>
 
           <!-- Section for displaying coordinates and humidity -->
-          <div v-if="!isError" class="sections">
+          <div v-if="!isError && !isLoading" class="sections">
             <Coords :coord="weatherInfo.coord" />
             <Humidity :humidity="weatherInfo.main.humidity" />
           </div>
@@ -199,6 +370,61 @@ onMounted(getWeather);
     transform: translateY(50%);
     border-radius: 10px;
     cursor: pointer;
+    border: none;
+  }
+  .location-btn {
+    position: absolute;
+    top: -13px;
+    right: 60px;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(50%);
+    border-radius: 10px;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+  }
+}
+
+.history-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.95);
+  border-radius: 12px;
+  margin-top: 8px;
+  padding: 8px 0;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.history-title {
+  padding: 8px 16px;
+  font-size: 12px;
+  color: rgba($white, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.history-item {
+  padding: 10px 16px;
+  color: $white;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
   }
 }
 
@@ -240,5 +466,31 @@ onMounted(getWeather);
   font-size: 14px;
   text-align: center;
   margin-top: 5px;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px 20px;
+  font-size: 18px;
+  color: $white;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.forecast-loading {
+  text-align: center;
+  padding: 20px;
+  font-size: 16px;
+  color: rgba($white, 0.8);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 </style>
