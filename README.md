@@ -6,8 +6,11 @@ It also features Lottie animations for a experience and integrates OpenWeatherMa
 ## Features
 
 - **City search:** Enter a city name to get the weather forecast.
+- **Geolocation support:** Use your current location to get local weather automatically.
+- **Search history:** Quick access to your 5 most recent searches.
 - **Current weather display:** Temperature, humidity, wind speed, and weather conditions description.
 - **5-day weather forecast:** Detailed forecast with daily high/low temperatures and weather conditions.
+- **Loading states:** Visual feedback during data fetching.
 - **Multi-day forecast:** Weather information for the upcoming days.
 - **Open API Integration:** The application uses an open API key to fetch weather data from OpenWeatherMap.
 - **Lottie Animations:** Smooth and lightweight animations enhance the user experience.
@@ -45,14 +48,21 @@ Navigate to the project directory and create a constants folder:
 
 ```sh
 cd SimpleWeatherApp
-mkdir -p src/constants && touch src/constants/index.js
 ```
 
-Set and export constants in `index.js`:
+Create environment file:
 
-```js
-export const API_KEY = "your_api_key";
-export const BASE_URL = "https://api.openweathermap.org/data/2.5/weather";
+Copy `.env.example` to `.env` and add your OpenWeatherMap API key:
+
+```sh
+cp .env.example .env
+```
+
+Then edit `.env` and replace `your_api_key_here` with your actual API key from [OpenWeatherMap](https://openweathermap.org/api):
+
+```env
+VITE_WEATHER_API_KEY=your_actual_api_key
+VITE_WEATHER_BASE_URL=https://api.openweathermap.org/data/2.5
 ```
 
 Install dependencies:
