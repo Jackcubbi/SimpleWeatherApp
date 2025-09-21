@@ -23,10 +23,55 @@ const isForecastLoading = ref(false);
 // Search history
 const searchHistory = ref([]);
 const showHistory = ref(false);
+// Offline indicator
+const isOffline = ref(false);
 
 // Computed property to check if an error occurred (API response status is not 200)
 const isError = computed(() => weatherInfo.value?.cod !== 200);
 const errorMessage = ref("");
+
+// Cache keys for localStorage
+const CACHE_KEYS = {
+  WEATHER: "weatherCache",
+  FORECAST: "forecastCache",
+  TIMESTAMP: "cacheTimestamp",
+};
+
+// Cache weather data to localStorage
+function cacheWeatherData(weather, forecast) {
+  try {
+    localStorage.setItem(CACHE_KEYS.WEATHER, JSON.stringify(weather));
+    localStorage.setItem(CACHE_KEYS.FORECAST, JSON.stringify(forecast));
+    localStorage.setItem(CACHE_KEYS.TIMESTAMP, Date.now().toString());
+  } catch (error) {
+    console.error("Failed to cache weather data:", error);
+  }
+}
+
+// Load cached weather data
+function loadCachedData() {
+  try {
+    const cachedWeather = localStorage.getItem(CACHE_KEYS.WEATHER);
+    const cachedForecast = localStorage.getItem(CACHE_KEYS.FORECAST);
+    const timestamp = localStorage.getItem(CACHE_KEYS.TIMESTAMP);
+
+    if (cachedWeather && cachedForecast && timestamp) {
+      const cacheAge = Date.now() - parseInt(timestamp);
+      const maxAge = 30 * 60 * 1000; // 30 minutes
+
+      if (cacheAge < maxAge) {
+        weatherInfo.value = JSON.parse(cachedWeather);
+        forecastInfo.value = JSON.parse(cachedForecast);
+        city.value = weatherInfo.value.name;
+        return true;
+      }
+    }
+  } catch (error) {
+    console.error("Failed to load cached data:", error);
+  }
+  return false;
+}
+
 
 // Load search history from localStorage on mount
 function loadSearchHistory() {
@@ -79,18 +124,36 @@ function getWeather() {
   isLoading.value = true;
 
   fetch(`${WEATHER_URL}?q=${city.value}&units=metric&appid=${API_KEY}`)
-    .then((response) => response.json())
-    .then((data) => {
-      weatherInfo.value = data;
-      // If weather data is successful, also fetch forecast
-      if (data.cod === 200) {
-        saveToHistory(data.name); // Save to history
-        getForecast();
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+      return response.json();
+    })
+    .then((data) => {
+      if (data.cod !== 200) {
+        throw new Error(data.message || "City not found");
+      }
+      weatherInfo.value = data;
+      isOffline.value = false; // Clear offline flag
+      saveToHistory(data.name); // Save to history
+      getForecast();
     })
     .catch((error) => {
       console.error("Weather API error:", error);
-      errorMessage.value = "Failed to fetch weather data";
+      
+      // Provide user-friendly error messages
+      if (error.message.includes("Failed to fetch")) {
+        errorMessage.value = "Network error. Please check your internet connection.";
+      } else if (error.message.includes("city not found")) {
+        errorMessage.value = "City not found. Please try another name.";
+      } else if (error.message.includes("HTTP error")) {
+        errorMessage.value = "Server error. Please try again later.";
+      } else {
+        errorMessage.value = error.message || "Failed to fetch weather data";
+      }
+      
+      weatherInfo.value = { cod: 404 }; // Set error state
     })
     .finally(() => {
       isLoading.value = false;
@@ -101,10 +164,24 @@ function getWeather() {
 function getForecast() {
   isForecastLoading.value = true;
   fetch(`${FORECAST_URL}?q=${city.value}&units=metric&appid=${API_KEY}`)
-    .then((response) => response.json())
-    .then((data) => (forecastInfo.value = data))
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then((data) => {
+      if (data.cod !== "200") {
+        throw new Error(data.message || "Failed to fetch forecast");
+      }
+      forecastInfo.value = data;
+      // Cache both weather and forecast data
+      cacheWeatherData(weatherInfo.value, data);
+    })
     .catch((error) => {
       console.error("Forecast API error:", error);
+      // Silently fail for forecast - set empty data
+      forecastInfo.value = { list: [] };
     })
     .finally(() => {
       isForecastLoading.value = false;
@@ -120,18 +197,33 @@ function getWeatherByCoords(lat, lon) {
   errorMessage.value = "";
 
   fetch(`${WEATHER_URL}?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`)
-    .then((response) => response.json())
-    .then((data) => {
-      weatherInfo.value = data;
-      if (data.cod === 200) {
-        city.value = data.name; // Update city name
-        saveToHistory(data.name);
-        getForecastByCoords(lat, lon);
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+      return response.json();
+    })
+    .then((data) => {
+      if (data.cod !== 200) {
+        throw new Error(data.message || "Failed to fetch weather data");
+      }
+      weatherInfo.value = data;
+      city.value = data.name; // Update city name
+      saveToHistory(data.name);
+      getForecastByCoords(lat, lon);
     })
     .catch((error) => {
       console.error("Weather API error:", error);
-      errorMessage.value = "Failed to fetch weather data";
+      
+      if (error.message.includes("Failed to fetch")) {
+        errorMessage.value = "Network error. Please check your internet connection.";
+      } else if (error.message.includes("HTTP error")) {
+        errorMessage.value = "Server error. Please try again later.";
+      } else {
+        errorMessage.value = error.message || "Failed to fetch weather data for your location";
+      }
+      
+      weatherInfo.value = { cod: 404 };
     })
     .finally(() => {
       isLoading.value = false;
@@ -142,10 +234,23 @@ function getWeatherByCoords(lat, lon) {
 function getForecastByCoords(lat, lon) {
   isForecastLoading.value = true;
   fetch(`${FORECAST_URL}?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`)
-    .then((response) => response.json())
-    .then((data) => (forecastInfo.value = data))
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then((data) => {
+      if (data.cod !== "200") {
+        throw new Error(data.message || "Failed to fetch forecast");
+      }
+      forecastInfo.value = data;
+      // Cache data from geolocation
+      cacheWeatherData(weatherInfo.value, data);
+    })
     .catch((error) => {
       console.error("Forecast API error:", error);
+      forecastInfo.value = { list: [] };
     })
     .finally(() => {
       isForecastLoading.value = false;
@@ -189,13 +294,28 @@ function useMyLocation() {
 // Fetch weather data when the component is mounted
 onMounted(() => {
   loadSearchHistory();
-  getWeather();
+  
+  // Try to load cached data first
+  const hasCachedData = loadCachedData();
+  
+  if (hasCachedData) {
+    isOffline.value = true;
+    // Try to update in background
+    getWeather();
+  } else {
+    getWeather();
+  }
 });
 </script>
 
 <template>
   <!-- Main page wrapper -->
   <div class="page">
+    <!-- Offline indicator -->
+    <div v-if="isOffline" class="offline-banner">
+      📦 Showing cached data
+    </div>
+    
     <div
       v-if="!isError"
       :style="`background-image: url('assets/img/main-backgrounds/${weatherInfo?.weather[0].description}.jpg');`"
@@ -295,6 +415,20 @@ onMounted(() => {
 </template>
 
 <style lang="scss" scoped>
+.offline-banner {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 165, 0, 0.9);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
 .page {
   position: relative;
   display: flex;
