@@ -25,6 +25,9 @@ const searchHistory = ref([]);
 const showHistory = ref(false);
 // Offline indicator
 const isOffline = ref(false);
+// Temperature unit (metric = Celsius, imperial = Fahrenheit)
+const units = ref("metric");
+const isCelsius = computed(() => units.value === "metric");
 
 // Computed property to check if an error occurred (API response status is not 200)
 const isError = computed(() => weatherInfo.value?.cod !== 200);
@@ -72,6 +75,14 @@ function loadCachedData() {
   return false;
 }
 
+// Toggle temperature units
+function toggleUnits() {
+  units.value = units.value === "metric" ? "imperial" : "metric";
+  // Refresh weather data with new units
+  if (weatherInfo.value && weatherInfo.value.cod === 200) {
+    getWeather();
+  }
+}
 
 // Load search history from localStorage on mount
 function loadSearchHistory() {
@@ -123,7 +134,7 @@ function getWeather() {
   errorMessage.value = ""; // Clear the error message
   isLoading.value = true;
 
-  fetch(`${WEATHER_URL}?q=${city.value}&units=metric&appid=${API_KEY}`)
+  fetch(`${WEATHER_URL}?q=${city.value}&units=${units.value}&appid=${API_KEY}`)
     .then((response) => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -163,7 +174,7 @@ function getWeather() {
 // Function to fetch 5-day forecast data from the API
 function getForecast() {
   isForecastLoading.value = true;
-  fetch(`${FORECAST_URL}?q=${city.value}&units=metric&appid=${API_KEY}`)
+  fetch(`${FORECAST_URL}?q=${city.value}&units=${units.value}&appid=${API_KEY}`)
     .then((response) => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -196,7 +207,7 @@ function getWeatherByCoords(lat, lon) {
   isLoading.value = true;
   errorMessage.value = "";
 
-  fetch(`${WEATHER_URL}?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`)
+  fetch(`${WEATHER_URL}?lat=${lat}&lon=${lon}&units=${units.value}&appid=${API_KEY}`)
     .then((response) => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -233,7 +244,7 @@ function getWeatherByCoords(lat, lon) {
 // Function to get forecast by coordinates
 function getForecastByCoords(lat, lon) {
   isForecastLoading.value = true;
-  fetch(`${FORECAST_URL}?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`)
+  fetch(`${FORECAST_URL}?lat=${lat}&lon=${lon}&units=${units.value}&appid=${API_KEY}`)
     .then((response) => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -311,6 +322,11 @@ onMounted(() => {
 <template>
   <!-- Main page wrapper -->
   <div class="page">
+    <!-- Unit toggle button -->
+    <button class="unit-toggle" @click="toggleUnits" :title="`Switch to ${isCelsius ? 'Fahrenheit' : 'Celsius'}`">
+      {{ isCelsius ? '°F' : '°C' }}
+    </button>
+    
     <!-- Offline indicator -->
     <div v-if="isOffline" class="offline-banner">
       📦 Showing cached data
@@ -427,6 +443,37 @@ onMounted(() => {
   font-size: 14px;
   z-index: 1000;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.unit-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.6);
+    transform: scale(1.1);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
 }
 
 .page {
