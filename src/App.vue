@@ -23,11 +23,19 @@ const isForecastLoading = ref(false);
 // Search history
 const searchHistory = ref([]);
 const showHistory = ref(false);
+// Favorites
+const favorites = ref([]);
+const showFavorites = ref(false);
 // Offline indicator
 const isOffline = ref(false);
 // Temperature unit (metric = Celsius, imperial = Fahrenheit)
 const units = ref("metric");
 const isCelsius = computed(() => units.value === "metric");
+
+// Check if current city is favorited
+const isFavorited = computed(() => {
+  return weatherInfo.value && favorites.value.includes(weatherInfo.value.name);
+});
 
 // Computed property to check if an error occurred (API response status is not 200)
 const isError = computed(() => weatherInfo.value?.cod !== 200);
@@ -90,6 +98,38 @@ function loadSearchHistory() {
   if (stored) {
     searchHistory.value = JSON.parse(stored);
   }
+}
+
+// Load favorites from localStorage
+function loadFavorites() {
+  const stored = localStorage.getItem("weatherFavorites");
+  if (stored) {
+    favorites.value = JSON.parse(stored);
+  }
+}
+
+// Toggle favorite city
+function toggleFavorite() {
+  if (!weatherInfo.value || weatherInfo.value.cod !== 200) return;
+  
+  const cityName = weatherInfo.value.name;
+  
+  if (favorites.value.includes(cityName)) {
+    // Remove from favorites
+    favorites.value = favorites.value.filter(c => c !== cityName);
+  } else {
+    // Add to favorites (max 10)
+    favorites.value = [...favorites.value, cityName].slice(-10);
+  }
+  
+  localStorage.setItem("weatherFavorites", JSON.stringify(favorites.value));
+}
+
+// Select city from favorites
+function selectFromFavorites(cityName) {
+  city.value = cityName;
+  showFavorites.value = false;
+  getWeather();
 }
 
 // Save search to history
@@ -305,6 +345,7 @@ function useMyLocation() {
 // Fetch weather data when the component is mounted
 onMounted(() => {
   loadSearchHistory();
+  loadFavorites();
   
   // Try to load cached data first
   const hasCachedData = loadCachedData();
@@ -322,6 +363,30 @@ onMounted(() => {
 <template>
   <!-- Main page wrapper -->
   <div class="page">
+    <!-- Favorites toggle button -->
+    <button 
+      class="favorites-toggle" 
+      @click="showFavorites = !showFavorites"
+      :title="showFavorites ? 'Hide favorites' : 'Show favorites'"
+    >
+      ★ {{ favorites.length }}
+    </button>
+    
+    <!-- Favorites panel -->
+    <div v-if="showFavorites && favorites.length > 0" class="favorites-panel">
+      <div class="favorites-title">Favorite Cities</div>
+      <div class="favorites-grid">
+        <button
+          v-for="(favCity, index) in favorites"
+          :key="index"
+          class="favorite-city-btn"
+          @click="selectFromFavorites(favCity)"
+        >
+          {{ favCity }}
+        </button>
+      </div>
+    </div>
+    
     <!-- Unit toggle button -->
     <button class="unit-toggle" @click="toggleUnits" :title="`Switch to ${isCelsius ? 'Fahrenheit' : 'Celsius'}`">
       {{ isCelsius ? '°F' : '°C' }}
@@ -394,6 +459,17 @@ onMounted(() => {
                   v-if="!isError && !isLoading"
                   :weatherInfo="weatherInfo"
                 />
+                
+                <!-- Favorite button -->
+                <button
+                  v-if="!isError && !isLoading"
+                  class="favorite-btn"
+                  @click="toggleFavorite"
+                  :title="isFavorited ? 'Remove from favorites' : 'Add to favorites'"
+                >
+                  {{ isFavorited ? '★' : '☆' }}
+                </button>
+                
                 <!-- Display error message if API returns an error -->
                 <div v-else-if="isError && !isLoading" class="summary-not">
                   <h4>Unfortunately, something went wrong!</h4>
@@ -431,6 +507,95 @@ onMounted(() => {
 </template>
 
 <style lang="scss" scoped>
+.favorites-toggle {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 25px;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 1000;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.6);
+  }
+}
+
+.favorites-panel {
+  position: fixed;
+  top: 80px;
+  left: 20px;
+  max-width: 300px;
+  background: rgba(0, 0, 0, 0.9);
+  border-radius: 12px;
+  padding: 16px;
+  z-index: 999;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.favorites-title {
+  color: rgba($white, 0.8);
+  font-size: 14px;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.favorites-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.favorite-city-btn {
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: $white;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+  font-size: 14px;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+}
+
+.favorite-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  color: gold;
+  font-size: 24px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+  }
+}
+
 .offline-banner {
   position: fixed;
   top: 20px;
