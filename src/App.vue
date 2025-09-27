@@ -373,19 +373,21 @@ onMounted(() => {
     </button>
     
     <!-- Favorites panel -->
-    <div v-if="showFavorites && favorites.length > 0" class="favorites-panel">
-      <div class="favorites-title">Favorite Cities</div>
-      <div class="favorites-grid">
-        <button
-          v-for="(favCity, index) in favorites"
-          :key="index"
-          class="favorite-city-btn"
-          @click="selectFromFavorites(favCity)"
-        >
-          {{ favCity }}
-        </button>
+    <transition name="slide-down">
+      <div v-if="showFavorites && favorites.length > 0" class="favorites-panel">
+        <div class="favorites-title">Favorite Cities</div>
+        <div class="favorites-grid">
+          <button
+            v-for="(favCity, index) in favorites"
+            :key="index"
+            class="favorite-city-btn"
+            @click="selectFromFavorites(favCity)"
+          >
+            {{ favCity }}
+          </button>
+        </div>
       </div>
-    </div>
+    </transition>
     
     <!-- Unit toggle button -->
     <button class="unit-toggle" @click="toggleUnits" :title="`Switch to ${isCelsius ? 'Fahrenheit' : 'Celsius'}`">
@@ -433,20 +435,22 @@ onMounted(() => {
                   <button class="search-btn" @click="getWeather"></button>
 
                   <!-- Search History Dropdown -->
-                  <div
-                    v-if="showHistory && searchHistory.length > 0"
-                    class="history-dropdown"
-                  >
-                    <div class="history-title">Recent Searches</div>
+                  <transition name="dropdown">
                     <div
-                      v-for="(historyCity, index) in searchHistory"
-                      :key="index"
-                      class="history-item"
-                      @click="selectFromHistory(historyCity)"
+                      v-if="showHistory && searchHistory.length > 0"
+                      class="history-dropdown"
                     >
-                      {{ historyCity }}
+                      <div class="history-title">Recent Searches</div>
+                      <div
+                        v-for="(historyCity, index) in searchHistory"
+                        :key="index"
+                        class="history-item"
+                        @click="selectFromHistory(historyCity)"
+                      >
+                        {{ historyCity }}
+                      </div>
                     </div>
-                  </div>
+                  </transition>
 
                   <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
                   <p v-if="isLoading" class="loading">
@@ -455,45 +459,55 @@ onMounted(() => {
                 </div>
 
                 <!-- Display weather summary if no error -->
-                <WeatherSummary
-                  v-if="!isError && !isLoading"
-                  :weatherInfo="weatherInfo"
-                />
+                <transition name="fade" mode="out-in">
+                  <WeatherSummary
+                    v-if="!isError && !isLoading"
+                    :weatherInfo="weatherInfo"
+                  />
+                </transition>
                 
                 <!-- Favorite button -->
-                <button
-                  v-if="!isError && !isLoading"
-                  class="favorite-btn"
-                  @click="toggleFavorite"
-                  :title="isFavorited ? 'Remove from favorites' : 'Add to favorites'"
-                >
-                  {{ isFavorited ? '★' : '☆' }}
-                </button>
+                <transition name="fade">
+                  <button
+                    v-if="!isError && !isLoading"
+                    class="favorite-btn"
+                    @click="toggleFavorite"
+                    :title="isFavorited ? 'Remove from favorites' : 'Add to favorites'"
+                  >
+                    {{ isFavorited ? '★' : '☆' }}
+                  </button>
+                </transition>
                 
                 <!-- Display error message if API returns an error -->
-                <div v-else-if="isError && !isLoading" class="summary-not">
-                  <h4>Unfortunately, something went wrong!</h4>
-                  <p>{{ capitalizeFirstLetter(weatherInfo?.message) }}</p>
-                </div>
+                <transition name="fade" mode="out-in">
+                  <div v-if="isError && !isLoading" class="summary-not">
+                    <h4>Unfortunately, something went wrong!</h4>
+                    <p>{{ capitalizeFirstLetter(weatherInfo?.message) }}</p>
+                  </div>
+                </transition>
               </div>
             </section>
 
             <!-- Right section for additional weather highlights -->
-            <section v-if="!isError && !isLoading" class="section right">
-              <Highlights :weatherInfo="weatherInfo" />
-            </section>
+            <transition name="slide-left">
+              <section v-if="!isError && !isLoading" class="section right">
+                <Highlights :weatherInfo="weatherInfo" />
+              </section>
+            </transition>
           </div>
 
           <!-- Section for displaying 5 days forecast -->
-          <div v-if="!isError && !isLoading" class="sections">
-            <WeatherForecast
-              v-if="!isForecastLoading && forecastInfo.list.length > 0"
-              :forecastInfo="forecastInfo"
-            />
-            <p v-if="isForecastLoading" class="forecast-loading">
-              Loading forecast...
-            </p>
-          </div>
+          <transition name="fade">
+            <div v-if="!isError && !isLoading" class="sections">
+              <WeatherForecast
+                v-if="!isForecastLoading && forecastInfo.list.length > 0"
+                :forecastInfo="forecastInfo"
+              />
+              <p v-if="isForecastLoading" class="forecast-loading">
+                Loading forecast...
+              </p>
+            </div>
+          </transition>
 
           <!-- Section for displaying coordinates and humidity -->
           <div v-if="!isError && !isLoading" class="sections">
@@ -837,6 +851,107 @@ onMounted(() => {
   }
   50% {
     opacity: 0.5;
+  }
+}
+
+// Vue Transitions
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.dropdown-enter-active {
+  animation: dropdownIn 0.3s ease-out;
+}
+
+.dropdown-leave-active {
+  animation: dropdownOut 0.2s ease-in;
+}
+
+@keyframes dropdownIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dropdownOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+.slide-left-enter-active {
+  animation: slideLeftIn 0.4s ease-out;
+}
+
+.slide-left-leave-active {
+  animation: slideLeftOut 0.3s ease-in;
+}
+
+@keyframes slideLeftIn {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideLeftOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+}
+
+.slide-down-enter-active {
+  animation: slideDownIn 0.3s ease-out;
+}
+
+.slide-down-leave-active {
+  animation: slideDownOut 0.2s ease-in;
+}
+
+@keyframes slideDownIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDownOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px);
   }
 }
 </style>
