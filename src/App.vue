@@ -111,17 +111,17 @@ function loadFavorites() {
 // Toggle favorite city
 function toggleFavorite() {
   if (!weatherInfo.value || weatherInfo.value.cod !== 200) return;
-  
+
   const cityName = weatherInfo.value.name;
-  
+
   if (favorites.value.includes(cityName)) {
     // Remove from favorites
-    favorites.value = favorites.value.filter(c => c !== cityName);
+    favorites.value = favorites.value.filter((c) => c !== cityName);
   } else {
     // Add to favorites (max 10)
     favorites.value = [...favorites.value, cityName].slice(-10);
   }
-  
+
   localStorage.setItem("weatherFavorites", JSON.stringify(favorites.value));
 }
 
@@ -192,10 +192,11 @@ function getWeather() {
     })
     .catch((error) => {
       console.error("Weather API error:", error);
-      
+
       // Provide user-friendly error messages
       if (error.message.includes("Failed to fetch")) {
-        errorMessage.value = "Network error. Please check your internet connection.";
+        errorMessage.value =
+          "Network error. Please check your internet connection.";
       } else if (error.message.includes("city not found")) {
         errorMessage.value = "City not found. Please try another name.";
       } else if (error.message.includes("HTTP error")) {
@@ -203,7 +204,7 @@ function getWeather() {
       } else {
         errorMessage.value = error.message || "Failed to fetch weather data";
       }
-      
+
       weatherInfo.value = { cod: 404 }; // Set error state
     })
     .finally(() => {
@@ -247,7 +248,9 @@ function getWeatherByCoords(lat, lon) {
   isLoading.value = true;
   errorMessage.value = "";
 
-  fetch(`${WEATHER_URL}?lat=${lat}&lon=${lon}&units=${units.value}&appid=${API_KEY}`)
+  fetch(
+    `${WEATHER_URL}?lat=${lat}&lon=${lon}&units=${units.value}&appid=${API_KEY}`
+  )
     .then((response) => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -265,15 +268,17 @@ function getWeatherByCoords(lat, lon) {
     })
     .catch((error) => {
       console.error("Weather API error:", error);
-      
+
       if (error.message.includes("Failed to fetch")) {
-        errorMessage.value = "Network error. Please check your internet connection.";
+        errorMessage.value =
+          "Network error. Please check your internet connection.";
       } else if (error.message.includes("HTTP error")) {
         errorMessage.value = "Server error. Please try again later.";
       } else {
-        errorMessage.value = error.message || "Failed to fetch weather data for your location";
+        errorMessage.value =
+          error.message || "Failed to fetch weather data for your location";
       }
-      
+
       weatherInfo.value = { cod: 404 };
     })
     .finally(() => {
@@ -284,7 +289,9 @@ function getWeatherByCoords(lat, lon) {
 // Function to get forecast by coordinates
 function getForecastByCoords(lat, lon) {
   isForecastLoading.value = true;
-  fetch(`${FORECAST_URL}?lat=${lat}&lon=${lon}&units=${units.value}&appid=${API_KEY}`)
+  fetch(
+    `${FORECAST_URL}?lat=${lat}&lon=${lon}&units=${units.value}&appid=${API_KEY}`
+  )
     .then((response) => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -346,10 +353,10 @@ function useMyLocation() {
 onMounted(() => {
   loadSearchHistory();
   loadFavorites();
-  
+
   // Try to load cached data first
   const hasCachedData = loadCachedData();
-  
+
   if (hasCachedData) {
     isOffline.value = true;
     // Try to update in background
@@ -364,14 +371,14 @@ onMounted(() => {
   <!-- Main page wrapper -->
   <div class="page">
     <!-- Favorites toggle button -->
-    <button 
-      class="favorites-toggle" 
+    <button
+      class="favorites-toggle"
       @click="showFavorites = !showFavorites"
       :title="showFavorites ? 'Hide favorites' : 'Show favorites'"
     >
       ★ {{ favorites.length }}
     </button>
-    
+
     <!-- Favorites panel -->
     <transition name="slide-down">
       <div v-if="showFavorites && favorites.length > 0" class="favorites-panel">
@@ -388,17 +395,19 @@ onMounted(() => {
         </div>
       </div>
     </transition>
-    
+
     <!-- Unit toggle button -->
-    <button class="unit-toggle" @click="toggleUnits" :title="`Switch to ${isCelsius ? 'Fahrenheit' : 'Celsius'}`">
-      {{ isCelsius ? '°F' : '°C' }}
+    <button
+      class="unit-toggle"
+      @click="toggleUnits"
+      :title="`Switch to ${isCelsius ? 'Fahrenheit' : 'Celsius'}`"
+    >
+      {{ isCelsius ? "°F" : "°C" }}
     </button>
-    
+
     <!-- Offline indicator -->
-    <div v-if="isOffline" class="offline-banner">
-      📦 Showing cached data
-    </div>
-    
+    <div v-if="isOffline" class="offline-banner">📦 Showing cached data</div>
+
     <div
       v-if="!isError"
       :style="`background-image: url('assets/img/main-backgrounds/${weatherInfo?.weather[0].description}.jpg');`"
@@ -463,21 +472,12 @@ onMounted(() => {
                   <WeatherSummary
                     v-if="!isError && !isLoading"
                     :weatherInfo="weatherInfo"
+                    :isCelsius="isCelsius"
+                    :isFavorited="isFavorited"
+                    @toggle-favorite="toggleFavorite"
                   />
                 </transition>
-                
-                <!-- Favorite button -->
-                <transition name="fade">
-                  <button
-                    v-if="!isError && !isLoading"
-                    class="favorite-btn"
-                    @click="toggleFavorite"
-                    :title="isFavorited ? 'Remove from favorites' : 'Add to favorites'"
-                  >
-                    {{ isFavorited ? '★' : '☆' }}
-                  </button>
-                </transition>
-                
+
                 <!-- Display error message if API returns an error -->
                 <transition name="fade" mode="out-in">
                   <div v-if="isError && !isLoading" class="summary-not">
@@ -584,29 +584,6 @@ onMounted(() => {
   &:hover {
     background: rgba(255, 255, 255, 0.2);
     border-color: rgba(255, 255, 255, 0.4);
-  }
-}
-
-.favorite-btn {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  width: 40px;
-  height: 40px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 50%;
-  color: gold;
-  font-size: 24px;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: scale(1.1);
   }
 }
 
