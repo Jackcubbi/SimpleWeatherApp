@@ -8,7 +8,18 @@ const props = defineProps({
     type: [Object, null],
     required: true,
   },
+  isCelsius: {
+    type: Boolean,
+    default: true,
+  },
+  isFavorited: {
+    type: Boolean,
+    default: false,
+  },
 });
+
+// Define emits
+const emit = defineEmits(["toggle-favorite"]);
 
 // Creating a formatted string for today's date
 const today = new Date().toLocaleString("en-EN", {
@@ -22,6 +33,15 @@ const today = new Date().toLocaleString("en-EN", {
 <template>
   <!-- Main container for weather summary -->
   <div class="summary">
+    <!-- Favorite button -->
+    <button
+      class="favorite-btn"
+      @click="emit('toggle-favorite')"
+      :title="isFavorited ? 'Remove from favorites' : 'Add to favorites'"
+    >
+      {{ isFavorited ? "★" : "☆" }}
+    </button>
+
     <div
       :style="`background-image: url('assets/img/weather-main/${weatherInfo?.weather[0].description}.png');`"
       class="pic-main"
@@ -29,18 +49,19 @@ const today = new Date().toLocaleString("en-EN", {
     <div class="weather">
       <div class="temperature">
         <div class="temp">
-          {{ Math.round(weatherInfo?.main?.temp * 2) / 2 }} °C
-          <!-- Display "feels like" temperature rounded to 0.5°C increments -->
+          {{ Math.round(weatherInfo?.main?.temp * 2) / 2 }}
+          {{ isCelsius ? "°C" : "°F" }}
+          <!-- Display temperature with dynamic unit -->
         </div>
         <div class="card-small feels-like">
           <div class="card-small-info">
             <div class="card-small-data">
-              <!-- Display "feels like" temperature rounded to 0.5°C increments -->
+              <!-- Display "feels like" temperature rounded to 0.5 increments -->
               <div class="card-small-title">Feels like:</div>
               <div class="info-main-num">
                 {{ Math.round(weatherInfo?.main?.feels_like * 2) / 2 }}
               </div>
-              <div class="info-main-text">°C</div>
+              <div class="info-main-text">{{ isCelsius ? "°C" : "°F" }}</div>
             </div>
             <div class="card-small-hint">
               <div class="card-small-text">How hot or cold it really feels</div>
@@ -63,6 +84,41 @@ const today = new Date().toLocaleString("en-EN", {
 </template>
 
 <style lang="scss" scoped>
+.summary {
+  position: relative;
+}
+
+.favorite-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 45px;
+  height: 45px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  color: #e9e9e9;
+  font-size: 26px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: scale(1.15) rotate(15deg);
+    box-shadow: 0 6px 16px rgba(255, 215, 0, 0.3);
+  }
+
+  &:active {
+    transform: scale(0.95) rotate(0deg);
+  }
+}
+
 .pic-main {
   width: 60px;
   height: 60px;
