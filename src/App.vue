@@ -530,7 +530,10 @@ onMounted(() => {
 
           <!-- Hourly Forecast Section -->
           <transition name="fade">
-            <div v-if="!isError && !isLoading && hourlyForecast.length > 0">
+            <div
+              v-if="!isError && !isLoading && hourlyForecast.length > 0"
+              class="hourly-forecast-wrapper"
+            >
               <HourlyForecast
                 :hourlyData="hourlyForecast"
                 :isCelsius="isCelsius"
@@ -544,6 +547,7 @@ onMounted(() => {
               <WeatherForecast
                 v-if="!isForecastLoading && forecastInfo.list.length > 0"
                 :forecastInfo="forecastInfo"
+                :isCelsius="isCelsius"
               />
               <p v-if="isForecastLoading" class="forecast-loading">
                 Loading forecast...
@@ -681,6 +685,8 @@ onMounted(() => {
   align-items: center;
   min-height: 100vh;
   padding: 20px 0;
+  width: 100%;
+  overflow-x: hidden;
 
   .main-bgd-image {
     width: 100%;
@@ -693,14 +699,38 @@ onMounted(() => {
     transition: ease-in-out 1s;
   }
 }
+
+.main {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
 .laptop {
   width: 100%;
+  max-width: 100%;
   padding: 20px;
   border-radius: 25px;
   -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
   box-shadow: 0 5px 50px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  box-sizing: border-box;
+
+  @media (max-width: 1024px) {
+    padding: 16px;
+  }
+
+  @media (max-width: 767px) {
+    padding: 12px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 8px;
+  }
 }
+
 .sections {
   display: flex;
   width: 100%;
@@ -737,6 +767,13 @@ onMounted(() => {
   position: relative;
   display: inline-block;
   width: 100%;
+
+  @media (max-width: 480px) {
+    .search {
+      padding-right: 100px; // Make room for both buttons
+    }
+  }
+
   .search-btn {
     content: "";
     position: absolute;
@@ -750,6 +787,12 @@ onMounted(() => {
     border-radius: 10px;
     cursor: pointer;
     border: none;
+
+    @media (max-width: 480px) {
+      width: 36px;
+      height: 36px;
+      right: 8px;
+    }
   }
   .location-btn {
     position: absolute;
@@ -770,6 +813,13 @@ onMounted(() => {
 
     &:hover {
       background: rgba(255, 255, 255, 0.2);
+    }
+
+    @media (max-width: 480px) {
+      width: 36px;
+      height: 36px;
+      right: 52px;
+      font-size: 18px;
     }
   }
 }
@@ -819,6 +869,10 @@ onMounted(() => {
   border-radius: 25px;
   opacity: 0.95;
   box-shadow: 0 0 10px #fff;
+
+  @media (max-width: 480px) {
+    padding: 12px;
+  }
 }
 .search {
   width: 100%;
@@ -830,6 +884,12 @@ onMounted(() => {
   border: none;
   outline: none;
   cursor: pointer;
+
+  @media (max-width: 480px) {
+    padding: 14px;
+    padding-right: 100px;
+    font-size: 15px;
+  }
 }
 .section-bottom {
   width: 50%;
@@ -840,11 +900,22 @@ onMounted(() => {
   }
 }
 
+.hourly-forecast-wrapper {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
 .error {
   color: rgb(221, 219, 85);
   font-size: 14px;
   text-align: center;
   margin-top: 5px;
+
+  @media (max-width: 480px) {
+    font-size: 13px;
+  }
 }
 
 .loading {
@@ -853,6 +924,11 @@ onMounted(() => {
   font-size: 18px;
   color: $white;
   animation: pulse 1.5s ease-in-out infinite;
+
+  @media (max-width: 480px) {
+    padding: 30px 15px;
+    font-size: 16px;
+  }
 }
 
 .forecast-loading {
@@ -861,6 +937,11 @@ onMounted(() => {
   font-size: 16px;
   color: rgba($white, 0.8);
   animation: pulse 1.5s ease-in-out infinite;
+
+  @media (max-width: 480px) {
+    padding: 15px;
+    font-size: 14px;
+  }
 }
 
 @keyframes pulse {
