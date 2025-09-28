@@ -66,12 +66,16 @@ const props = defineProps({
 
 <style lang="scss" scoped>
 .hourly-forecast {
+  width: 100%;
+  max-width: 100%;
   margin: 16px 0;
   padding: 20px;
   background: rgba(0, 0, 0, 0.3);
   border-radius: 16px;
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .hourly-title {
@@ -92,9 +96,12 @@ const props = defineProps({
   display: flex;
   gap: 12px;
   overflow-x: auto;
+  overflow-y: hidden;
   padding: 8px 0;
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.3) rgba(0, 0, 0, 0.2);
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
 
   &::-webkit-scrollbar {
     height: 8px;
@@ -113,10 +120,27 @@ const props = defineProps({
       background: rgba(255, 255, 255, 0.5);
     }
   }
+
+  @media (max-width: 767px) {
+    gap: 10px;
+
+    &::-webkit-scrollbar {
+      height: 6px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    gap: 8px;
+
+    &::-webkit-scrollbar {
+      height: 5px;
+    }
+  }
 }
 
 .hour-card {
   min-width: 140px;
+  flex-shrink: 0;
   padding: 16px;
   background: rgba(255, 255, 255, 0.1);
   border-radius: 12px;
@@ -177,18 +201,108 @@ const props = defineProps({
   }
 }
 
-@media (max-width: 767px) {
-  .hourly-forecast {
-    padding: 16px;
+// Tablet landscape and smaller desktops
+@media (max-width: 1024px) {
+  .hour-card {
+    min-width: 130px;
+    padding: 14px 12px;
   }
 
-  .hour-card {
-    min-width: 120px;
-    padding: 12px;
+  .hour-icon {
+    width: 46px;
+    height: 46px;
+  }
+
+  .hour-temp {
+    font-size: 20px;
+  }
+
+  .detail-item {
+    font-size: 13px;
+  }
+}
+
+// Tablet portrait
+@media (max-width: 767px) {
+  .hourly-forecast {
+    padding: 14px;
+    margin: 12px 0;
   }
 
   .hourly-title {
     font-size: 16px;
+    margin-bottom: 12px;
+
+    .title-icon {
+      font-size: 18px;
+    }
+  }
+
+  .hour-card {
+    min-width: 110px;
+    padding: 10px 8px;
+  }
+
+  .hour-time {
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+
+  .hour-icon {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 8px;
+  }
+
+  .hour-temp {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+
+  .hour-details {
+    gap: 4px;
+  }
+
+  .detail-item {
+    font-size: 12px;
+    gap: 4px;
+
+    .detail-icon {
+      font-size: 12px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .hourly-forecast {
+    padding: 12px;
+    margin: 10px 0;
+  }
+
+  .hourly-title {
+    font-size: 15px;
+  }
+
+  .hour-card {
+    min-width: 100px;
+    padding: 8px 6px;
+  }
+
+  .hour-time {
+    font-size: 11px;
+  }
+
+  .hour-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .hour-temp {
+    font-size: 16px;
+  }
+
+  .detail-item {
+    font-size: 11px;
   }
 }
 </style>
