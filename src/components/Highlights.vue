@@ -208,6 +208,10 @@ onMounted(() => {
     display: flex;
     justify-content: space-between;
 
+    @media (max-width: 1024px) {
+      gap: 12px;
+    }
+
     @media (max-width: 575px) {
       flex-direction: column;
     }
