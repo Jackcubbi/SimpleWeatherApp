@@ -225,9 +225,10 @@ function processHourlyForecast(data) {
 
   // Get next 8 entries (24 hours, API provides 3-hour intervals)
   hourlyForecast.value = data.list.slice(0, 8).map((item) => ({
-    time: new Date(item.dt * 1000).toLocaleTimeString("en-US", {
-      hour: "numeric",
-      hour12: true,
+    time: new Date(item.dt * 1000).toLocaleTimeString("fi-FI", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
     }),
     temp: Math.round(item.main.temp),
     feelsLike: Math.round(item.main.feels_like),
@@ -530,7 +531,7 @@ onMounted(() => {
           <!-- Hourly Forecast Section -->
           <transition name="fade">
             <div v-if="!isError && !isLoading && hourlyForecast.length > 0">
-              <HourlyForecast 
+              <HourlyForecast
                 :hourlyData="hourlyForecast"
                 :isCelsius="isCelsius"
               />
