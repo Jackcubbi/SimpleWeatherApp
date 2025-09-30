@@ -19,42 +19,42 @@ const props = defineProps({
       <span class="title-icon">🕐</span>
       Hourly Forecast (Next 24 Hours)
     </h3>
-    
+
     <div class="hourly-scroll">
-      <div
-        v-for="(hour, index) in hourlyData"
-        :key="index"
-        class="hour-card"
-      >
+      <div v-for="(hour, index) in hourlyData" :key="index" class="hour-card">
         <div class="hour-time">{{ hour.time }}</div>
-        
+
         <div
           class="hour-icon"
           :style="`background-image: url('assets/img/weather-main/${hour.icon}.png');`"
           :title="capitalizeFirstLetter(hour.description)"
         ></div>
-        
+
         <div class="hour-temp">
-          {{ hour.temp }}{{ isCelsius ? '°C' : '°F' }}
+          {{ hour.temp }}{{ isCelsius ? "°C" : "°F" }}
         </div>
-        
+
         <div class="hour-details">
           <div class="detail-item" title="Feels like">
-            <span class="detail-icon">🌡️</span>
+            <span class="detail-icon">🌡️ Feels: </span>
             {{ hour.feelsLike }}°
           </div>
-          
+
           <div class="detail-item" title="Humidity">
             <span class="detail-icon">💧</span>
             {{ hour.humidity }}%
           </div>
-          
+
           <div class="detail-item" title="Wind speed">
             <span class="detail-icon">💨</span>
             {{ hour.windSpeed }} m/s
           </div>
-          
-          <div v-if="hour.pop > 0" class="detail-item precipitation" title="Chance of rain">
+
+          <div
+            v-if="hour.pop > 0"
+            class="detail-item precipitation"
+            title="Chance of rain"
+          >
             <span class="detail-icon">🌧️</span>
             {{ hour.pop }}%
           </div>
@@ -82,7 +82,7 @@ const props = defineProps({
   display: flex;
   align-items: center;
   gap: 8px;
-  
+
   .title-icon {
     font-size: 22px;
   }
@@ -95,20 +95,20 @@ const props = defineProps({
   padding: 8px 0;
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.3) rgba(0, 0, 0, 0.2);
-  
+
   &::-webkit-scrollbar {
     height: 8px;
   }
-  
+
   &::-webkit-scrollbar-track {
     background: rgba(0, 0, 0, 0.2);
     border-radius: 4px;
   }
-  
+
   &::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.3);
     border-radius: 4px;
-    
+
     &:hover {
       background: rgba(255, 255, 255, 0.5);
     }
@@ -122,8 +122,7 @@ const props = defineProps({
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   transition: all 0.3s ease;
-  cursor: pointer;
-  
+
   &:hover {
     background: rgba(255, 255, 255, 0.15);
     transform: translateY(-4px);
@@ -167,12 +166,12 @@ const props = defineProps({
   align-items: center;
   gap: 6px;
   color: rgba($white, 0.8);
-  font-size: 12px;
-  
+  font-size: 14px;
+
   &.precipitation {
     color: #4fc3f7;
   }
-  
+
   .detail-icon {
     font-size: 14px;
   }
@@ -182,12 +181,12 @@ const props = defineProps({
   .hourly-forecast {
     padding: 16px;
   }
-  
+
   .hour-card {
     min-width: 120px;
     padding: 12px;
   }
-  
+
   .hourly-title {
     font-size: 16px;
   }
