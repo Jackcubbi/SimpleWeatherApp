@@ -102,7 +102,6 @@ const props = defineProps({
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.3) rgba(0, 0, 0, 0.2);
   -webkit-overflow-scrolling: touch;
-  scroll-behavior: smooth;
 
   &::-webkit-scrollbar {
     height: 8px;
