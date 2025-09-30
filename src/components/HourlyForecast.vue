@@ -31,7 +31,7 @@ const props = defineProps({
         ></div>
 
         <div class="hour-temp">
-          {{ hour.temp }}{{ isCelsius ? "°C" : "°F" }}
+          {{ Math.round(hour.temp) }}{{ isCelsius ? "°C" : "°F" }}
         </div>
 
         <div class="hour-details">
