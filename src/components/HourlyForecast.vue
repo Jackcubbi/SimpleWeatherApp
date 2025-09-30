@@ -1,0 +1,195 @@
+<script setup>
+import { capitalizeFirstLetter } from "../utils";
+
+const props = defineProps({
+  hourlyData: {
+    type: Array,
+    required: true,
+  },
+  isCelsius: {
+    type: Boolean,
+    default: true,
+  },
+});
+</script>
+
+<template>
+  <div class="hourly-forecast">
+    <h3 class="hourly-title">
+      <span class="title-icon">🕐</span>
+      Hourly Forecast (Next 24 Hours)
+    </h3>
+    
+    <div class="hourly-scroll">
+      <div
+        v-for="(hour, index) in hourlyData"
+        :key="index"
+        class="hour-card"
+      >
+        <div class="hour-time">{{ hour.time }}</div>
+        
+        <div
+          class="hour-icon"
+          :style="`background-image: url('assets/img/weather-main/${hour.icon}.png');`"
+          :title="capitalizeFirstLetter(hour.description)"
+        ></div>
+        
+        <div class="hour-temp">
+          {{ hour.temp }}{{ isCelsius ? '°C' : '°F' }}
+        </div>
+        
+        <div class="hour-details">
+          <div class="detail-item" title="Feels like">
+            <span class="detail-icon">🌡️</span>
+            {{ hour.feelsLike }}°
+          </div>
+          
+          <div class="detail-item" title="Humidity">
+            <span class="detail-icon">💧</span>
+            {{ hour.humidity }}%
+          </div>
+          
+          <div class="detail-item" title="Wind speed">
+            <span class="detail-icon">💨</span>
+            {{ hour.windSpeed }} m/s
+          </div>
+          
+          <div v-if="hour.pop > 0" class="detail-item precipitation" title="Chance of rain">
+            <span class="detail-icon">🌧️</span>
+            {{ hour.pop }}%
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style lang="scss" scoped>
+.hourly-forecast {
+  margin: 16px 0;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.hourly-title {
+  color: $white;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  
+  .title-icon {
+    font-size: 22px;
+  }
+}
+
+.hourly-scroll {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 8px 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) rgba(0, 0, 0, 0.2);
+  
+  &::-webkit-scrollbar {
+    height: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.5);
+    }
+  }
+}
+
+.hour-card {
+  min-width: 140px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-4px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+  }
+}
+
+.hour-time {
+  color: rgba($white, 0.8);
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.hour-icon {
+  width: 50px;
+  height: 50px;
+  margin: 0 auto 12px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+
+.hour-temp {
+  color: $white;
+  font-size: 22px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.hour-details {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: rgba($white, 0.8);
+  font-size: 12px;
+  
+  &.precipitation {
+    color: #4fc3f7;
+  }
+  
+  .detail-icon {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 767px) {
+  .hourly-forecast {
+    padding: 16px;
+  }
+  
+  .hour-card {
+    min-width: 120px;
+    padding: 12px;
+  }
+  
+  .hourly-title {
+    font-size: 16px;
+  }
+}
+</style>

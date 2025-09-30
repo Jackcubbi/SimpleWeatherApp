@@ -9,6 +9,7 @@ import Highlights from "./components/Highlights.vue";
 import Coords from "./components/Coords.vue";
 import Humidity from "./components/Humidity.vue";
 import WeatherForecast from "./components/WeatherForecast.vue";
+import HourlyForecast from "./components/HourlyForecast.vue";
 
 // Reactive variable to store the city name
 const city = ref("Kauniainen");
@@ -17,12 +18,15 @@ const city = ref("Kauniainen");
 const weatherInfo = ref(null);
 // Reactive variable to store forecast data with default structure
 const forecastInfo = ref({ list: [] });
+// Hourly forecast data
+const hourlyForecast = ref([]);
 // Loading states
 const isLoading = ref(false);
 const isForecastLoading = ref(false);
 // Search history
 const searchHistory = ref([]);
 const showHistory = ref(false);
+
 // Favorites
 const favorites = ref([]);
 const showFavorites = ref(false);
@@ -212,6 +216,29 @@ function getWeather() {
     });
 }
 
+// Process hourly forecast data (next 24 hours)
+function processHourlyForecast(data) {
+  if (!data || !data.list) {
+    hourlyForecast.value = [];
+    return;
+  }
+
+  // Get next 8 entries (24 hours, API provides 3-hour intervals)
+  hourlyForecast.value = data.list.slice(0, 8).map((item) => ({
+    time: new Date(item.dt * 1000).toLocaleTimeString("en-US", {
+      hour: "numeric",
+      hour12: true,
+    }),
+    temp: Math.round(item.main.temp),
+    feelsLike: Math.round(item.main.feels_like),
+    description: item.weather[0].description,
+    icon: item.weather[0].description,
+    humidity: item.main.humidity,
+    windSpeed: item.wind.speed,
+    pop: Math.round(item.pop * 100), // Probability of precipitation
+  }));
+}
+
 // Function to fetch 5-day forecast data from the API
 function getForecast() {
   isForecastLoading.value = true;
@@ -227,6 +254,8 @@ function getForecast() {
         throw new Error(data.message || "Failed to fetch forecast");
       }
       forecastInfo.value = data;
+      // Extract hourly forecast (next 24 hours)
+      processHourlyForecast(data);
       // Cache both weather and forecast data
       cacheWeatherData(weatherInfo.value, data);
     })
@@ -303,6 +332,8 @@ function getForecastByCoords(lat, lon) {
         throw new Error(data.message || "Failed to fetch forecast");
       }
       forecastInfo.value = data;
+      // Extract hourly forecast
+      processHourlyForecast(data);
       // Cache data from geolocation
       cacheWeatherData(weatherInfo.value, data);
     })
@@ -495,6 +526,16 @@ onMounted(() => {
               </section>
             </transition>
           </div>
+
+          <!-- Hourly Forecast Section -->
+          <transition name="fade">
+            <div v-if="!isError && !isLoading && hourlyForecast.length > 0">
+              <HourlyForecast 
+                :hourlyData="hourlyForecast"
+                :isCelsius="isCelsius"
+              />
+            </div>
+          </transition>
 
           <!-- Section for displaying 5 days forecast -->
           <transition name="fade">
