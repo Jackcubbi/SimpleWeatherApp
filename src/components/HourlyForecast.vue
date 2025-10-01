@@ -146,6 +146,7 @@ const props = defineProps({
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   transition: all 0.3s ease;
+  cursor: pointer;
 
   &:hover {
     background: rgba(255, 255, 255, 0.15);
