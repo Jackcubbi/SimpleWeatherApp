@@ -410,6 +410,8 @@ const formatTemperature = (temp) => {
   justify-content: center;
   transition: all 0.2s ease;
   flex-shrink: 0;
+  position: sticky;
+  right: 0;
 
   &:hover {
     background: rgba(255, 255, 255, 0.2);
