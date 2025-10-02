@@ -204,6 +204,10 @@ const props = defineProps({
 
 // Tablet landscape and smaller desktops
 @media (max-width: 1024px) {
+  .hourly-forecast {
+    padding: 18px;
+  }
+
   .hour-card {
     min-width: 130px;
     padding: 14px 12px;
