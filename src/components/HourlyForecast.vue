@@ -246,6 +246,7 @@ const props = defineProps({
   .hour-card {
     min-width: 110px;
     padding: 10px 8px;
+    border-radius: 10px;
   }
 
   .hour-time {
