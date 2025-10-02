@@ -328,6 +328,7 @@ const formatTemperature = (temp) => {
   color: $white;
   font-size: 16px;
   font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 
   @media (max-width: 1024px) {
     font-size: 15px;
