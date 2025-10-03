@@ -72,7 +72,7 @@ function loadCachedData() {
 
     if (cachedWeather && cachedForecast && timestamp) {
       const cacheAge = Date.now() - parseInt(timestamp);
-      const maxAge = 30 * 60 * 1000; // 30 minutes
+      const maxAge = 30 * 60 * 1000; // 30 minutes cache duration
 
       if (cacheAge < maxAge) {
         weatherInfo.value = JSON.parse(cachedWeather);
