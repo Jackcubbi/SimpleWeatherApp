@@ -148,7 +148,7 @@ onMounted(() => {
       <div class="highlight">
         <div class="card">
           <div class="card-title">Sunrise and sunset</div>
-          <div class="card-pic" id="card-pic-sunrise-sunset"></div>
+          <div class="card-pic" id="card-pic-sunrise-sunset" role="img" aria-label="Sunrise and sunset icon"></div>
           <div class="card-info">
             <div class="states">
               <div class="state">
