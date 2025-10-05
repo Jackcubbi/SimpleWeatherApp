@@ -57,7 +57,7 @@ onMounted(() => {
       <div class="highlight">
         <div class="card">
           <div class="card-title">Wind</div>
-          <div class="card-pic" id="card-pic-wind"></div>
+          <div class="card-pic" id="card-pic-wind" role="img" aria-label="Wind icon"></div>
 
           <div class="card-info">
             <div class="card-justify">
