@@ -272,6 +272,7 @@ const props = defineProps({
   .detail-item {
     font-size: 12px;
     gap: 4px;
+    line-height: 1.3;
 
     .detail-icon {
       font-size: 12px;
