@@ -711,7 +711,6 @@ onMounted(() => {
   width: 100%;
   max-width: 100%;
   padding: 20px;
-  border-radius: 25px;
   -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
   box-shadow: 0 5px 50px rgba(0, 0, 0, 0.5);
@@ -836,6 +835,8 @@ onMounted(() => {
   z-index: 1000;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.2);
+  max-height: 300px;
+  overflow-y: auto;
 }
 
 .history-title {
