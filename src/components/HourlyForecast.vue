@@ -147,6 +147,7 @@ const props = defineProps({
   border: 1px solid rgba(255, 255, 255, 0.2);
   transition: all 0.3s ease;
   cursor: pointer;
+  backdrop-filter: blur(5px);
 
   &:hover {
     background: rgba(255, 255, 255, 0.15);
