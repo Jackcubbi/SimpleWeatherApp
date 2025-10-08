@@ -247,6 +247,7 @@ const formatTemperature = (temp) => {
   align-items: center;
   padding: 16px 8px;
   background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   transition: all 0.3s ease;
