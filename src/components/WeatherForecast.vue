@@ -487,6 +487,7 @@ const formatTemperature = (temp) => {
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.15);
   transition: all 0.2s ease;
+  flex-shrink: 0;
 
   &:hover {
     background: rgba(255, 255, 255, 0.15);
