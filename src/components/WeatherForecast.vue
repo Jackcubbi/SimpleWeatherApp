@@ -466,6 +466,7 @@ const formatTemperature = (temp) => {
   display: flex;
   gap: 12px;
   padding-bottom: 8px;
+  scroll-behavior: smooth;
 
   @media (max-width: 1024px) {
     gap: 10px;
