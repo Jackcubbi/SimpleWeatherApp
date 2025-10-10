@@ -222,6 +222,7 @@ const formatTemperature = (temp) => {
   margin: 0 0 20px 0;
   text-align: center;
   letter-spacing: 0.5px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .forecast-cards {
