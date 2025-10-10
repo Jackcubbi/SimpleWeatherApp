@@ -65,6 +65,8 @@ const props = defineProps({
 </template>
 
 <style lang="scss" scoped>
+@use "@/assets/styles/variables" as *;
+
 .hourly-forecast {
   width: 100%;
   max-width: 100%;
