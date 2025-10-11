@@ -90,6 +90,7 @@ const props = defineProps({
   display: flex;
   align-items: center;
   gap: 8px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 
   .title-icon {
     font-size: 22px;
