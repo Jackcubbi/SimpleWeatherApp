@@ -10,6 +10,7 @@ import Coords from "./components/Coords.vue";
 import Humidity from "./components/Humidity.vue";
 import WeatherForecast from "./components/WeatherForecast.vue";
 import HourlyForecast from "./components/HourlyForecast.vue";
+import Footer from "./components/Footer.vue";
 
 // Reactive variable to store the city name
 const city = ref("Kauniainen");
@@ -562,6 +563,9 @@ onMounted(() => {
           </div>
         </div>
       </div>
+
+      <!-- Footer -->
+      <Footer />
     </main>
   </div>
 </template>
@@ -703,8 +707,6 @@ onMounted(() => {
 .main {
   width: 100%;
   max-width: 100%;
-  display: flex;
-  justify-content: center;
 }
 
 .laptop {
