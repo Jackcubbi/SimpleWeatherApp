@@ -1,6 +1,11 @@
+<script setup>
+const currentYear = new Date().getFullYear();
+</script>
+
 <template>
   <footer class="footer">
     <div class="footer-content">
+      <p class="footer-year">{{ currentYear }}</p>
       <p class="footer-text">Created by Anatoli Rostsin</p>
       <p class="footer-credits">
         Powered by
