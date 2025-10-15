@@ -688,7 +688,6 @@ onMounted(() => {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  padding: 20px 0;
   width: 100%;
   overflow-x: hidden;
 
@@ -715,24 +714,25 @@ onMounted(() => {
   padding: 20px;
   -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
-  box-shadow: 0 5px 50px rgba(0, 0, 0, 0.5);
   overflow: hidden;
   box-sizing: border-box;
+  margin: 5rem 0;
+  border-radius: 20px;
 
   @media (max-width: 1300px) {
-    padding: 4rem 1rem;
+    padding: 1rem;
   }
 
   @media (max-width: 1024px) {
-    padding: 4rem 1rem;
+    padding: 1rem;
   }
 
   @media (max-width: 767px) {
-    padding: 4rem 0.8rem;
+    padding: 0.8rem;
   }
 
   @media (max-width: 480px) {
-    padding: 4rem 0.5rem;
+    padding: 0.5rem;
   }
 }
 
