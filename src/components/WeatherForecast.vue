@@ -185,7 +185,7 @@ const formatTemperature = (temp) => {
                     💨 {{ Math.round(hour.windSpeed) }} m/s
                   </div>
                   <div v-if="hour.pop > 0" class="hour-stat">
-                    🌧️ {{ Math.round(hour.pop * 100) }}%
+                    🌧️ {{ hour.pop }}%
                   </div>
                 </div>
               </div>
