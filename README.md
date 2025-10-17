@@ -81,7 +81,7 @@ The build files will be located in the `dist/` directory.
 
 ## Screenshot
 
-![SimpleWeatherApp Screenshot](screenshot.png)
+<img width="1163" height="891" alt="image" src="https://github.com/user-attachments/assets/28aa90bc-60c6-49c8-95aa-0eb905f1f7ef" />
 
 ## License
 
