@@ -1,6 +1,6 @@
 # SimpleWeatherApp
 
-SimpleWeatherApp is a simple weather forecast application (SPA) developed using Vue.js, JS, and SCSS. 
+SimpleWeatherApp is a simple weather forecast application (SPA) developed using Vue.js, JS, and SCSS.
 It also features Lottie animations for a experience and integrates OpenWeatherMap API to fetch real-time weather data.
 
 ## Features
@@ -86,4 +86,3 @@ The build files will be located in the `dist/` directory.
 ## License
 
 This project does not have a specified license. Please contact the author for more details.
-

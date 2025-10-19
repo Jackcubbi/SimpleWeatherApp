@@ -41,7 +41,7 @@ function getWeather() {
       }
     })
     .catch((error) => {
-      console.error('Weather API error:', error);
+      console.error("Weather API error:", error);
       errorMessage.value = "Failed to fetch weather data";
     });
 }
@@ -52,7 +52,7 @@ function getForecast() {
     .then((response) => response.json())
     .then((data) => (forecastInfo.value = data))
     .catch((error) => {
-      console.error('Forecast API error:', error);
+      console.error("Forecast API error:", error);
     });
 }
 
