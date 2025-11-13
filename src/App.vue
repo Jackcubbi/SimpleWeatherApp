@@ -733,6 +733,7 @@ onMounted(() => {
 .sections {
   display: flex;
   width: 100%;
+  justify-content: center;
 
   @media (max-width: 767px) {
     flex-direction: column;
