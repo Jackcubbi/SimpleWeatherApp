@@ -717,16 +717,20 @@ onMounted(() => {
   overflow: hidden;
   box-sizing: border-box;
 
+  @media (max-width: 1300px) {
+    padding: 4rem 1rem;
+  }
+
   @media (max-width: 1024px) {
-    padding: 16px;
+    padding: 4rem 1rem;
   }
 
   @media (max-width: 767px) {
-    padding: 12px;
+    padding: 4rem 0.8rem;
   }
 
   @media (max-width: 480px) {
-    padding: 8px;
+    padding: 4rem 0.5rem;
   }
 }
 
