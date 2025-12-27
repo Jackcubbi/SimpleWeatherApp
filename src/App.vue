@@ -1,165 +1,36 @@
 <script setup>
-import { ref, onMounted, computed } from "vue";
-import { API_KEY, WEATHER_URL, FORECAST_URL } from "./constants/index";
-import { capitalizeFirstLetter, debounce } from "./utils";
+import { ref, onMounted } from 'vue';
+import { useWeatherStore } from './stores/weather';
+import { capitalizeFirstLetter } from './utils';
 
 // Importing child components for displaying weather details
-import WeatherSummary from "./components/WeatherSummary.vue";
-import Highlights from "./components/Highlights.vue";
-import Coords from "./components/Coords.vue";
-import Humidity from "./components/Humidity.vue";
-import WeatherForecast from "./components/WeatherForecast.vue";
-import HourlyForecast from "./components/HourlyForecast.vue";
-import Footer from "./components/Footer.vue";
+import WeatherSummary from './components/WeatherSummary.vue';
+import Highlights from './components/Highlights.vue';
+import Coords from './components/Coords.vue';
+import Humidity from './components/Humidity.vue';
+import WeatherForecast from './components/WeatherForecast.vue';
+import HourlyForecast from './components/HourlyForecast.vue';
+import Footer from './components/Footer.vue';
 
-// Reactive variable to store the city name
-const city = ref("Kauniainen");
+// Use weather store
+const weatherStore = useWeatherStore();
 
-// Reactive variable to store fetched weather data
-const weatherInfo = ref(null);
-// Reactive variable to store forecast data with default structure
-const forecastInfo = ref({ list: [] });
-// Hourly forecast data
-const hourlyForecast = ref([]);
-// Loading states
-const isLoading = ref(false);
-const isForecastLoading = ref(false);
-// Search history
-const searchHistory = ref([]);
+// Local UI state (not in store)
 const showHistory = ref(false);
-
-// Favorites
-const favorites = ref([]);
 const showFavorites = ref(false);
-// Offline indicator
-const isOffline = ref(false);
-// Temperature unit (metric = Celsius, imperial = Fahrenheit)
-const units = ref("metric");
-const isCelsius = computed(() => units.value === "metric");
 
-// Check if current city is favorited
-const isFavorited = computed(() => {
-  return weatherInfo.value && favorites.value.includes(weatherInfo.value.name);
-});
-
-// Computed property to check if an error occurred (API response status is not 200)
-const isError = computed(() => weatherInfo.value?.cod !== 200);
-const errorMessage = ref("");
-
-// Cache keys for localStorage
-const CACHE_KEYS = {
-  WEATHER: "weatherCache",
-  FORECAST: "forecastCache",
-  TIMESTAMP: "cacheTimestamp",
-};
-
-// Cache weather data to localStorage
-function cacheWeatherData(weather, forecast) {
-  try {
-    localStorage.setItem(CACHE_KEYS.WEATHER, JSON.stringify(weather));
-    localStorage.setItem(CACHE_KEYS.FORECAST, JSON.stringify(forecast));
-    localStorage.setItem(CACHE_KEYS.TIMESTAMP, Date.now().toString());
-  } catch (error) {
-    console.error("Failed to cache weather data:", error);
-  }
-}
-
-// Load cached weather data
-function loadCachedData() {
-  try {
-    const cachedWeather = localStorage.getItem(CACHE_KEYS.WEATHER);
-    const cachedForecast = localStorage.getItem(CACHE_KEYS.FORECAST);
-    const timestamp = localStorage.getItem(CACHE_KEYS.TIMESTAMP);
-
-    if (cachedWeather && cachedForecast && timestamp) {
-      const cacheAge = Date.now() - parseInt(timestamp);
-      const maxAge = 30 * 60 * 1000; // 30 minutes cache duration
-
-      if (cacheAge < maxAge) {
-        weatherInfo.value = JSON.parse(cachedWeather);
-        forecastInfo.value = JSON.parse(cachedForecast);
-        city.value = weatherInfo.value.name;
-        return true;
-      }
-    }
-  } catch (error) {
-    console.error("Failed to load cached data:", error);
-  }
-  return false;
-}
-
-// Toggle temperature units
-function toggleUnits() {
-  units.value = units.value === "metric" ? "imperial" : "metric";
-  // Refresh weather data with new units
-  if (weatherInfo.value && weatherInfo.value.cod === 200) {
-    getWeather();
-  }
-}
-
-// Load search history from localStorage on mount
-function loadSearchHistory() {
-  const stored = localStorage.getItem("weatherSearchHistory");
-  if (stored) {
-    searchHistory.value = JSON.parse(stored);
-  }
-}
-
-// Load favorites from localStorage
-function loadFavorites() {
-  const stored = localStorage.getItem("weatherFavorites");
-  if (stored) {
-    favorites.value = JSON.parse(stored);
-  }
-}
-
-// Toggle favorite city
-function toggleFavorite() {
-  if (!weatherInfo.value || weatherInfo.value.cod !== 200) return;
-
-  const cityName = weatherInfo.value.name;
-
-  if (favorites.value.includes(cityName)) {
-    // Remove from favorites
-    favorites.value = favorites.value.filter((c) => c !== cityName);
-  } else {
-    // Add to favorites (max 10)
-    favorites.value = [...favorites.value, cityName].slice(-10);
-  }
-
-  localStorage.setItem("weatherFavorites", JSON.stringify(favorites.value));
+// Select city from history
+function selectFromHistory(cityName) {
+  weatherStore.city = cityName;
+  showHistory.value = false;
+  weatherStore.getWeather();
 }
 
 // Select city from favorites
 function selectFromFavorites(cityName) {
-  city.value = cityName;
+  weatherStore.city = cityName;
   showFavorites.value = false;
-  getWeather();
-}
-
-// Save search to history
-function saveToHistory(cityName) {
-  if (!cityName) return;
-
-  // Remove duplicates and add to beginning
-  searchHistory.value = [
-    cityName,
-    ...searchHistory.value.filter(
-      (c) => c.toLowerCase() !== cityName.toLowerCase()
-    ),
-  ].slice(0, 5); // Keep only last 5 searches
-
-  localStorage.setItem(
-    "weatherSearchHistory",
-    JSON.stringify(searchHistory.value)
-  );
-}
-
-// Select city from history
-function selectFromHistory(cityName) {
-  city.value = cityName;
-  showHistory.value = false;
-  getWeather();
+  weatherStore.getWeather();
 }
 
 // Hide history dropdown with delay
@@ -169,234 +40,9 @@ function hideHistory() {
   }, 200);
 }
 
-// Function to fetch current weather data from the API
-function getWeather() {
-  if (!city.value.trim()) {
-    errorMessage.value = "Enter the city name!";
-    return;
-  }
-
-  errorMessage.value = ""; // Clear the error message
-  isLoading.value = true;
-
-  fetch(`${WEATHER_URL}?q=${city.value}&units=${units.value}&appid=${API_KEY}`)
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then((data) => {
-      if (data.cod !== 200) {
-        throw new Error(data.message || "City not found");
-      }
-      weatherInfo.value = data;
-      isOffline.value = false; // Clear offline flag
-      saveToHistory(data.name); // Save to history
-      getForecast();
-    })
-    .catch((error) => {
-      console.error("Weather API error:", error);
-
-      // Provide user-friendly error messages
-      if (error.message.includes("Failed to fetch")) {
-        errorMessage.value =
-          "Network error. Please check your internet connection.";
-      } else if (error.message.includes("city not found")) {
-        errorMessage.value = "City not found. Please try another name.";
-      } else if (error.message.includes("HTTP error")) {
-        errorMessage.value = "Server error. Please try again later.";
-      } else {
-        errorMessage.value = error.message || "Failed to fetch weather data";
-      }
-
-      weatherInfo.value = { cod: 404 }; // Set error state
-    })
-    .finally(() => {
-      isLoading.value = false;
-    });
-}
-
-// Process hourly forecast data (next 24 hours)
-function processHourlyForecast(data) {
-  if (!data || !data.list) {
-    hourlyForecast.value = [];
-    return;
-  }
-
-  // Get next 8 entries (24 hours, API provides 3-hour intervals)
-  hourlyForecast.value = data.list.slice(0, 8).map((item) => ({
-    time: new Date(item.dt * 1000).toLocaleTimeString("fi-FI", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    }),
-    temp: Math.round(item.main.temp),
-    feelsLike: Math.round(item.main.feels_like),
-    description: item.weather[0].description,
-    icon: item.weather[0].description,
-    humidity: item.main.humidity,
-    windSpeed: item.wind.speed,
-    pop: Math.round(item.pop * 100), // Probability of precipitation
-  }));
-}
-
-// Function to fetch 5-day forecast data from the API
-function getForecast() {
-  isForecastLoading.value = true;
-  fetch(`${FORECAST_URL}?q=${city.value}&units=${units.value}&appid=${API_KEY}`)
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then((data) => {
-      if (data.cod !== "200") {
-        throw new Error(data.message || "Failed to fetch forecast");
-      }
-      forecastInfo.value = data;
-      // Extract hourly forecast (next 24 hours)
-      processHourlyForecast(data);
-      // Cache both weather and forecast data
-      cacheWeatherData(weatherInfo.value, data);
-    })
-    .catch((error) => {
-      console.error("Forecast API error:", error);
-      // Silently fail for forecast - set empty data
-      forecastInfo.value = { list: [] };
-    })
-    .finally(() => {
-      isForecastLoading.value = false;
-    });
-}
-
-// Debounced search function to avoid excessive API calls
-const debouncedSearch = debounce(getWeather, 800);
-
-// Function to get weather by coordinates (for geolocation)
-function getWeatherByCoords(lat, lon) {
-  isLoading.value = true;
-  errorMessage.value = "";
-
-  fetch(
-    `${WEATHER_URL}?lat=${lat}&lon=${lon}&units=${units.value}&appid=${API_KEY}`
-  )
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then((data) => {
-      if (data.cod !== 200) {
-        throw new Error(data.message || "Failed to fetch weather data");
-      }
-      weatherInfo.value = data;
-      city.value = data.name; // Update city name
-      saveToHistory(data.name);
-      getForecastByCoords(lat, lon);
-    })
-    .catch((error) => {
-      console.error("Weather API error:", error);
-
-      if (error.message.includes("Failed to fetch")) {
-        errorMessage.value =
-          "Network error. Please check your internet connection.";
-      } else if (error.message.includes("HTTP error")) {
-        errorMessage.value = "Server error. Please try again later.";
-      } else {
-        errorMessage.value =
-          error.message || "Failed to fetch weather data for your location";
-      }
-
-      weatherInfo.value = { cod: 404 };
-    })
-    .finally(() => {
-      isLoading.value = false;
-    });
-}
-
-// Function to get forecast by coordinates
-function getForecastByCoords(lat, lon) {
-  isForecastLoading.value = true;
-  fetch(
-    `${FORECAST_URL}?lat=${lat}&lon=${lon}&units=${units.value}&appid=${API_KEY}`
-  )
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then((data) => {
-      if (data.cod !== "200") {
-        throw new Error(data.message || "Failed to fetch forecast");
-      }
-      forecastInfo.value = data;
-      // Extract hourly forecast
-      processHourlyForecast(data);
-      // Cache data from geolocation
-      cacheWeatherData(weatherInfo.value, data);
-    })
-    .catch((error) => {
-      console.error("Forecast API error:", error);
-      forecastInfo.value = { list: [] };
-    })
-    .finally(() => {
-      isForecastLoading.value = false;
-    });
-}
-
-// Function to use geolocation
-function useMyLocation() {
-  if (!navigator.geolocation) {
-    errorMessage.value = "Geolocation is not supported by your browser";
-    return;
-  }
-
-  isLoading.value = true;
-  errorMessage.value = "";
-
-  navigator.geolocation.getCurrentPosition(
-    (position) => {
-      const { latitude, longitude } = position.coords;
-      getWeatherByCoords(latitude, longitude);
-    },
-    (error) => {
-      isLoading.value = false;
-      switch (error.code) {
-        case error.PERMISSION_DENIED:
-          errorMessage.value = "Location permission denied";
-          break;
-        case error.POSITION_UNAVAILABLE:
-          errorMessage.value = "Location information unavailable";
-          break;
-        case error.TIMEOUT:
-          errorMessage.value = "Location request timed out";
-          break;
-        default:
-          errorMessage.value = "An unknown error occurred";
-      }
-    }
-  );
-}
-
 // Fetch weather data when the component is mounted
 onMounted(() => {
-  loadSearchHistory();
-  loadFavorites();
-
-  // Try to load cached data first
-  const hasCachedData = loadCachedData();
-
-  if (hasCachedData) {
-    isOffline.value = true;
-    // Try to update in background
-    getWeather();
-  } else {
-    getWeather();
-  }
+  weatherStore.initialize();
 });
 </script>
 
@@ -406,19 +52,22 @@ onMounted(() => {
     <!-- Favorites toggle button -->
     <button
       class="favorites-toggle"
-      @click="showFavorites = !showFavorites"
       :title="showFavorites ? 'Hide favorites' : 'Show favorites'"
+      @click="showFavorites = !showFavorites"
     >
-      ★ {{ favorites.length }}
+      ★ {{ weatherStore.favorites.length }}
     </button>
 
     <!-- Favorites panel -->
     <transition name="slide-down">
-      <div v-if="showFavorites && favorites.length > 0" class="favorites-panel">
+      <div
+        v-if="showFavorites && weatherStore.favorites.length > 0"
+        class="favorites-panel"
+      >
         <div class="favorites-title">Favorite Cities</div>
         <div class="favorites-grid">
           <button
-            v-for="(favCity, index) in favorites"
+            v-for="(favCity, index) in weatherStore.favorites"
             :key="index"
             class="favorite-city-btn"
             @click="selectFromFavorites(favCity)"
@@ -432,18 +81,20 @@ onMounted(() => {
     <!-- Unit toggle button -->
     <button
       class="unit-toggle"
-      @click="toggleUnits"
-      :title="`Switch to ${isCelsius ? 'Fahrenheit' : 'Celsius'}`"
+      :title="`Switch to ${weatherStore.isCelsius ? 'Fahrenheit' : 'Celsius'}`"
+      @click="weatherStore.toggleUnits"
     >
-      {{ isCelsius ? "°F" : "°C" }}
+      {{ weatherStore.isCelsius ? '°F' : '°C' }}
     </button>
 
     <!-- Offline indicator -->
-    <div v-if="isOffline" class="offline-banner">📦 Showing cached data</div>
+    <div v-if="weatherStore.isOffline" class="offline-banner">
+      📦 Showing cached data
+    </div>
 
     <div
-      v-if="!isError"
-      :style="`background-image: url('assets/img/main-backgrounds/${weatherInfo?.weather[0].description}.jpg');`"
+      v-if="!weatherStore.isError"
+      :style="`background-image: url('assets/img/main-backgrounds/${weatherStore.weatherInfo?.weather[0].description}.jpg');`"
       class="main-bgd-image"
     ></div>
     <main class="main">
@@ -452,39 +103,52 @@ onMounted(() => {
         <div class="laptop">
           <!-- Section for input and weather summary -->
           <div class="sections">
-            <section :class="['section', 'left', { 'section-error': isError }]">
+            <section
+              :class="[
+                'section',
+                'left',
+                { 'section-error': weatherStore.isError },
+              ]"
+            >
               <div class="info">
                 <div class="city-inner">
                   <!-- Search input field with two-way binding -->
                   <input
                     id="city-search-input"
-                    v-model="city"
+                    v-model="weatherStore.city"
                     type="text"
                     class="search"
                     placeholder="Enter city name..."
                     autocomplete="off"
-                    @keyup.enter="getWeather"
+                    @keyup.enter="weatherStore.getWeather"
                     @focus="showHistory = true"
                     @blur="hideHistory"
                   />
                   <button
                     class="location-btn"
-                    @click="useMyLocation"
                     title="Use my location"
+                    @click="weatherStore.useMyLocation"
                   >
                     📍
                   </button>
-                  <button class="search-btn" @click="getWeather"></button>
+                  <button
+                    class="search-btn"
+                    @click="weatherStore.getWeather"
+                  ></button>
 
                   <!-- Search History Dropdown -->
                   <transition name="dropdown">
                     <div
-                      v-if="showHistory && searchHistory.length > 0"
+                      v-if="
+                        showHistory && weatherStore.searchHistory.length > 0
+                      "
                       class="history-dropdown"
                     >
                       <div class="history-title">Recent Searches</div>
                       <div
-                        v-for="(historyCity, index) in searchHistory"
+                        v-for="(
+                          historyCity, index
+                        ) in weatherStore.searchHistory"
                         :key="index"
                         class="history-item"
                         @click="selectFromHistory(historyCity)"
@@ -494,8 +158,10 @@ onMounted(() => {
                     </div>
                   </transition>
 
-                  <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
-                  <p v-if="isLoading" class="loading">
+                  <p v-if="weatherStore.errorMessage" class="error">
+                    {{ weatherStore.errorMessage }}
+                  </p>
+                  <p v-if="weatherStore.isLoading" class="loading">
                     Loading weather data...
                   </p>
                 </div>
@@ -503,19 +169,26 @@ onMounted(() => {
                 <!-- Display weather summary if no error -->
                 <transition name="fade" mode="out-in">
                   <WeatherSummary
-                    v-if="!isError && !isLoading"
-                    :weatherInfo="weatherInfo"
-                    :isCelsius="isCelsius"
-                    :isFavorited="isFavorited"
-                    @toggle-favorite="toggleFavorite"
+                    v-if="!weatherStore.isError && !weatherStore.isLoading"
+                    :weather-info="weatherStore.weatherInfo"
+                    :is-celsius="weatherStore.isCelsius"
+                    :is-favorited="weatherStore.isFavorited"
+                    @toggle-favorite="weatherStore.toggleFavorite"
                   />
                 </transition>
 
                 <!-- Display error message if API returns an error -->
                 <transition name="fade" mode="out-in">
-                  <div v-if="isError && !isLoading" class="summary-not">
+                  <div
+                    v-if="weatherStore.isError && !weatherStore.isLoading"
+                    class="summary-not"
+                  >
                     <h4>Unfortunately, something went wrong!</h4>
-                    <p>{{ capitalizeFirstLetter(weatherInfo?.message) }}</p>
+                    <p>
+                      {{
+                        capitalizeFirstLetter(weatherStore.weatherInfo?.message)
+                      }}
+                    </p>
                   </div>
                 </transition>
               </div>
@@ -523,8 +196,11 @@ onMounted(() => {
 
             <!-- Right section for additional weather highlights -->
             <transition name="slide-left">
-              <section v-if="!isError && !isLoading" class="section right">
-                <Highlights :weatherInfo="weatherInfo" />
+              <section
+                v-if="!weatherStore.isError && !weatherStore.isLoading"
+                class="section right"
+              >
+                <Highlights :weather-info="weatherStore.weatherInfo" />
               </section>
             </transition>
           </div>
@@ -532,34 +208,47 @@ onMounted(() => {
           <!-- Hourly Forecast Section -->
           <transition name="fade">
             <div
-              v-if="!isError && !isLoading && hourlyForecast.length > 0"
+              v-if="
+                !weatherStore.isError &&
+                !weatherStore.isLoading &&
+                weatherStore.hourlyForecast.length > 0
+              "
               class="hourly-forecast-wrapper"
             >
               <HourlyForecast
-                :hourlyData="hourlyForecast"
-                :isCelsius="isCelsius"
+                :hourly-data="weatherStore.hourlyForecast"
+                :is-celsius="weatherStore.isCelsius"
               />
             </div>
           </transition>
 
           <!-- Section for displaying 5 days forecast -->
           <transition name="fade">
-            <div v-if="!isError && !isLoading" class="sections">
+            <div
+              v-if="!weatherStore.isError && !weatherStore.isLoading"
+              class="sections"
+            >
               <WeatherForecast
-                v-if="!isForecastLoading && forecastInfo.list.length > 0"
-                :forecastInfo="forecastInfo"
-                :isCelsius="isCelsius"
+                v-if="
+                  !weatherStore.isForecastLoading &&
+                  weatherStore.forecastInfo.list.length > 0
+                "
+                :forecast-info="weatherStore.forecastInfo"
+                :is-celsius="weatherStore.isCelsius"
               />
-              <p v-if="isForecastLoading" class="forecast-loading">
+              <p v-if="weatherStore.isForecastLoading" class="forecast-loading">
                 Loading forecast...
               </p>
             </div>
           </transition>
 
           <!-- Section for displaying coordinates and humidity -->
-          <div v-if="!isError && !isLoading" class="sections">
-            <Coords :coord="weatherInfo.coord" />
-            <Humidity :humidity="weatherInfo.main.humidity" />
+          <div
+            v-if="!weatherStore.isError && !weatherStore.isLoading"
+            class="sections"
+          >
+            <Coords :coord="weatherStore.weatherInfo.coord" />
+            <Humidity :humidity="weatherStore.weatherInfo.main.humidity" />
           </div>
         </div>
       </div>
@@ -781,13 +470,13 @@ onMounted(() => {
   }
 
   .search-btn {
-    content: "";
+    content: '';
     position: absolute;
     top: -13px;
     right: 10px;
     width: 40px;
     height: 40px;
-    background: url("./assets/img/search.svg") no-repeat 50% 50%;
+    background: url('./assets/img/search.svg') no-repeat 50% 50%;
     background-size: contain;
     transform: translateY(50%);
     border-radius: 10px;
@@ -885,7 +574,7 @@ onMounted(() => {
 .search {
   width: 100%;
   padding: 16px;
-  font-family: "Inter", Arial, sans-serif;
+  font-family: 'Inter', Arial, sans-serif;
   color: $white;
   background-color: rgba(0, 0, 0, 0.75);
   border-radius: 16px;
