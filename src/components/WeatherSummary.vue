@@ -1,9 +1,9 @@
 <script setup>
 // Importing a utility function for formatting text
-import { capitalizeFirstLetter } from "../utils";
+import { capitalizeFirstLetter } from '../utils';
 
 // Defining component props to receive weather data from the parent component
-const props = defineProps({
+defineProps({
   weatherInfo: {
     type: [Object, null],
     required: true,
@@ -19,14 +19,14 @@ const props = defineProps({
 });
 
 // Define emits
-const emit = defineEmits(["toggle-favorite"]);
+const emit = defineEmits(['toggle-favorite']);
 
 // Creating a formatted string for today's date
-const today = new Date().toLocaleString("en-EN", {
-  weekday: "short",
-  year: "numeric",
-  month: "long",
-  day: "numeric",
+const today = new Date().toLocaleString('en-EN', {
+  weekday: 'short',
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
 });
 </script>
 
@@ -36,10 +36,10 @@ const today = new Date().toLocaleString("en-EN", {
     <!-- Favorite button -->
     <button
       class="favorite-btn"
-      @click="emit('toggle-favorite')"
       :title="isFavorited ? 'Remove from favorites' : 'Add to favorites'"
+      @click="emit('toggle-favorite')"
     >
-      {{ isFavorited ? "★" : "☆" }}
+      {{ isFavorited ? '★' : '☆' }}
     </button>
 
     <div
@@ -50,7 +50,7 @@ const today = new Date().toLocaleString("en-EN", {
       <div class="temperature">
         <div class="temp">
           {{ Math.round(weatherInfo?.main?.temp * 2) / 2 }}
-          {{ isCelsius ? "°C" : "°F" }}
+          {{ isCelsius ? '°C' : '°F' }}
           <!-- Display temperature with dynamic unit -->
         </div>
         <div class="card-small feels-like">
@@ -61,7 +61,7 @@ const today = new Date().toLocaleString("en-EN", {
               <div class="info-main-num">
                 {{ Math.round(weatherInfo?.main?.feels_like * 2) / 2 }}
               </div>
-              <div class="info-main-text">{{ isCelsius ? "°C" : "°F" }}</div>
+              <div class="info-main-text">{{ isCelsius ? '°C' : '°F' }}</div>
             </div>
             <div class="card-small-hint">
               <div class="card-small-text">How hot or cold it really feels</div>
@@ -194,7 +194,7 @@ const today = new Date().toLocaleString("en-EN", {
   font-size: 14px;
 
   &::before {
-    content: "";
+    content: '';
     position: absolute;
     top: 0;
     left: 0;
@@ -208,12 +208,12 @@ const today = new Date().toLocaleString("en-EN", {
 }
 .weather-desc {
   &::before {
-    background-image: url("../assets/img/weather.svg");
+    background-image: url('../assets/img/weather.svg');
   }
 }
 .city {
   &::before {
-    background-image: url("../assets/img/location.svg");
+    background-image: url('../assets/img/location.svg');
   }
 }
 .date {
@@ -221,7 +221,7 @@ const today = new Date().toLocaleString("en-EN", {
     left: 2px;
     width: 15px;
     height: 15px;
-    background-image: url("../assets/img/calendar.svg");
+    background-image: url('../assets/img/calendar.svg');
   }
 }
 </style>
