@@ -1,6 +1,6 @@
 <script setup>
-import { computed, ref } from "vue";
-import { capitalizeFirstLetter } from "../utils";
+import { computed, ref } from 'vue';
+import { capitalizeFirstLetter } from '../utils';
 
 // Define component props to receive forecast data from the parent component
 const props = defineProps({
@@ -64,9 +64,9 @@ const dailyForecasts = computed(() => {
         temp_min: tempMin,
       },
       hourlyData: dayForecasts.map((item) => ({
-        time: new Date(item.dt * 1000).toLocaleTimeString("fi-FI", {
-          hour: "2-digit",
-          minute: "2-digit",
+        time: new Date(item.dt * 1000).toLocaleTimeString('fi-FI', {
+          hour: '2-digit',
+          minute: '2-digit',
           hour12: false,
         }),
         temp: Math.round(item.main.temp),
@@ -93,10 +93,10 @@ const toggleHourlyView = (index) => {
 // Format date for display
 const formatDate = (timestamp) => {
   const date = new Date(timestamp * 1000);
-  return date.toLocaleDateString("en-EN", {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
+  return date.toLocaleDateString('en-EN', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
   });
 };
 
@@ -155,7 +155,7 @@ const formatTemperature = (temp) => {
             <h4>
               {{ formatDate(dailyForecasts[expandedDay].dt) }} - Hourly Forecast
             </h4>
-            <button @click.stop="expandedDay = null" class="close-btn">
+            <button class="close-btn" @click.stop="expandedDay = null">
               ✕
             </button>
           </div>
@@ -173,7 +173,7 @@ const formatTemperature = (temp) => {
                   class="hour-icon"
                 ></div>
                 <div class="hour-temp">
-                  {{ Math.round(hour.temp) }}{{ isCelsius ? "°C" : "°F" }}
+                  {{ Math.round(hour.temp) }}{{ isCelsius ? '°C' : '°F' }}
                 </div>
                 <div class="hour-feels">
                   Feels {{ Math.round(hour.feelsLike) }}°
