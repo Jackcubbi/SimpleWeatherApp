@@ -1,7 +1,7 @@
 <script setup>
-import { capitalizeFirstLetter } from "../utils";
+import { capitalizeFirstLetter } from '../utils';
 
-const props = defineProps({
+defineProps({
   hourlyData: {
     type: Array,
     required: true,
@@ -31,7 +31,7 @@ const props = defineProps({
         ></div>
 
         <div class="hour-temp">
-          {{ Math.round(hour.temp) }}{{ isCelsius ? "°C" : "°F" }}
+          {{ Math.round(hour.temp) }}{{ isCelsius ? '°C' : '°F' }}
         </div>
 
         <div class="hour-details">
@@ -65,7 +65,7 @@ const props = defineProps({
 </template>
 
 <style lang="scss" scoped>
-@use "@/assets/styles/variables" as *;
+@use '@/assets/styles/variables' as *;
 
 .hourly-forecast {
   width: 100%;
