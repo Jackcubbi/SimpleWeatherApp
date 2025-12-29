@@ -1,7 +1,7 @@
 <script setup>
 // Define component properties using defineProps
 // This component expects a "coord" object as a prop, which contains latitude (lat) and longitude (lon).
-const props = defineProps({
+defineProps({
   coord: {
     type: Object, // Expected type: Object containing latitude and longitude
     required: true, // The prop is required, meaning the component won't work without it

@@ -1,7 +1,7 @@
 <script setup>
 // Define the component properties using defineProps
 // This component expects a "humidity" prop, which should be a number
-const props = defineProps({
+defineProps({
   humidity: {
     type: Number,
     required: true,
