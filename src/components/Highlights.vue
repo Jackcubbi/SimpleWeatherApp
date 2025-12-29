@@ -1,7 +1,7 @@
 <script setup>
-import lottie from "lottie-web";
-import { computed, onMounted } from "vue"; // Import computed properties from Vue
-import { getPressureMm, getTime } from "@/utils"; // Import utility functions
+import lottie from 'lottie-web';
+import { computed, onMounted } from 'vue'; // Import computed properties from Vue
+import { getPressureMm, getTime } from '@/utils'; // Import utility functions
 
 // Define component props
 const props = defineProps({
@@ -26,10 +26,10 @@ const sunsetTime = computed(() => {
 
 onMounted(() => {
   const animations = [
-    { id: "card-pic-wind", path: "assets/img/wind.json" },
+    { id: 'card-pic-wind', path: 'assets/img/wind.json' },
     {
-      id: "card-pic-sunrise-sunset",
-      path: "assets/img/sunrise-sunset.json",
+      id: 'card-pic-sunrise-sunset',
+      path: 'assets/img/sunrise-sunset.json',
     },
   ];
 
@@ -39,10 +39,10 @@ onMounted(() => {
       lottie.loadAnimation({
         container,
         path,
-        renderer: "svg",
+        renderer: 'svg',
         loop: true,
         autoplay: true,
-        name: "demo animation",
+        name: 'demo animation',
       });
     }
   });
@@ -58,8 +58,8 @@ onMounted(() => {
         <div class="card">
           <div class="card-title">Wind</div>
           <div
-            class="card-pic"
             id="card-pic-wind"
+            class="card-pic"
             role="img"
             aria-label="Wind icon"
           ></div>
@@ -154,8 +154,8 @@ onMounted(() => {
         <div class="card">
           <div class="card-title">Sunrise and sunset</div>
           <div
-            class="card-pic"
             id="card-pic-sunrise-sunset"
+            class="card-pic"
             role="img"
             aria-label="Sunrise and sunset icon"
           ></div>
@@ -277,7 +277,7 @@ onMounted(() => {
     background-size: contain;
 
     &--pressure {
-      background-image: url("/src/assets/img/barometer.png");
+      background-image: url('/src/assets/img/barometer.png');
     }
   }
 }
@@ -299,7 +299,7 @@ onMounted(() => {
     width: 20px;
     height: 20px;
     margin-bottom: 6px;
-    background: url("/src/assets/img/sun.svg") no-repeat 50% 50%;
+    background: url('/src/assets/img/sun.svg') no-repeat 50% 50%;
     background-size: cover;
 
     &--flipped {
@@ -384,13 +384,13 @@ onMounted(() => {
       margin-bottom: 3px;
     }
     &--wind {
-      background-image: url("/src/assets/img/gusts.svg");
+      background-image: url('/src/assets/img/gusts.svg');
     }
     &--pressure {
-      background-image: url("/src/assets/img/humidity.svg");
+      background-image: url('/src/assets/img/humidity.svg');
     }
     &--sun {
-      background-image: url("/src/assets/img/cloud.svg");
+      background-image: url('/src/assets/img/cloud.svg');
     }
   }
   &-data {
