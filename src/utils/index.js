@@ -2,7 +2,7 @@
  * First letter to UpperCase
  */
 export const capitalizeFirstLetter = (str) => {
-  if (!str) return "";
+  if (!str) return '';
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
@@ -18,8 +18,8 @@ export const getPressureMm = (hpa) => {
  * Set time zone offset
  */
 export const getTime = (seconds) => {
-  return new Date(seconds * 1000).toLocaleTimeString("fi-FI", {
-    timeZone: "Europe/Helsinki",
+  return new Date(seconds * 1000).toLocaleTimeString('fi-FI', {
+    timeZone: 'Europe/Helsinki',
   });
 };
 
