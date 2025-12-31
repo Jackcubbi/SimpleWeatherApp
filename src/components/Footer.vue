@@ -18,7 +18,7 @@ const currentYear = new Date().getFullYear();
 </template>
 
 <style lang="scss" scoped>
-@use "@/assets/styles/variables" as *;
+@use '@/assets/styles/variables' as *;
 
 .footer {
   width: 100%;
