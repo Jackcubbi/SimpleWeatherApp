@@ -11,17 +11,14 @@ const props = defineProps({
   },
 });
 
-// Compute timezone from weatherInfo object
-const timezone = computed(() => props.weatherInfo?.timezone);
-
 // Compute sunrise time using the getTime utility function
 const sunriseTime = computed(() => {
-  return getTime(props.weatherInfo?.sys?.sunrise + timezone.value);
+  return getTime(props.weatherInfo?.sys?.sunrise);
 });
 
 // Compute sunset time using the getTime utility function
 const sunsetTime = computed(() => {
-  return getTime(props.weatherInfo?.sys?.sunset + timezone.value);
+  return getTime(props.weatherInfo?.sys?.sunset);
 });
 
 onMounted(() => {

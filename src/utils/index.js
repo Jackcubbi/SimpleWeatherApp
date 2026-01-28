@@ -15,11 +15,18 @@ export const getPressureMm = (hpa) => {
 };
 
 /**
- * Set time zone offset
- */
+ * Convert Unix timestamp to local time string
+ * Unix timestamp in seconds
+ * Formatted time string (HH:MM:SS)
+ *
+ **/
 export const getTime = (seconds) => {
-  return new Date(seconds * 1000).toLocaleTimeString('fi-FI', {
-    timeZone: 'Europe/Helsinki',
+  const date = new Date(seconds * 1000);
+  return date.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
   });
 };
 
