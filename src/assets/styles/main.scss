@@ -1,7 +1,145 @@
-@use "./variables" as *;
-@use "./common" as *;
+@use './variables' as *;
+@use './common' as *;
 
-// App.vue styles
+// ============================================================
+// MIXINS & UTILITIES
+// ============================================================
+
+@mixin glass-panel($opacity: 0.2, $blur: 10px) {
+  background: rgba(255, 255, 255, $opacity);
+  backdrop-filter: blur($blur);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+@mixin gradient-panel {
+  background: radial-gradient(
+    circle,
+    rgba(2, 0, 36, 1) 0%,
+    rgba(79, 29, 0, 1) 100%
+  );
+  background-size: cover;
+  border-radius: 25px;
+  opacity: 0.95;
+  box-shadow: 0 0 10px #fff;
+}
+
+@mixin card-hover-effect {
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+  }
+}
+
+@mixin scrollbar-custom($thumb-color: rgba(255, 255, 255, 0.3)) {
+  scrollbar-width: thin;
+  scrollbar-color: $thumb-color rgba(0, 0, 0, 0.2);
+
+  &::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $thumb-color;
+    border-radius: 4px;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.5);
+    }
+  }
+}
+
+// ============================================================
+// ANIMATIONS & KEYFRAMES
+// ============================================================
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes dropdownIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dropdownOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes slideLeftIn {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideLeftOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+}
+
+@keyframes slideDownIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDownOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
+
+// ============================================================
+// APP LAYOUT & CORE COMPONENTS
+// ============================================================
+
 .favorites-toggle {
   position: fixed;
   top: 20px;
@@ -35,36 +173,36 @@
   z-index: 999;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.2);
-}
 
-.favorites-title {
-  color: rgba($white, 0.8);
-  font-size: 14px;
-  margin-bottom: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
+  .favorites-title {
+    color: rgba($white, 0.8);
+    font-size: 14px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
 
-.favorites-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
+  .favorites-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
 
-.favorite-city-btn {
-  padding: 10px 16px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  color: $white;
-  cursor: pointer;
-  transition: all 0.2s;
-  text-align: left;
-  font-size: 14px;
+  .favorite-city-btn {
+    padding: 10px 16px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: $white;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+    font-size: 14px;
 
-  &:hover {
-    background: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.4);
+    &:hover {
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.4);
+    }
   }
 }
 
@@ -123,9 +261,9 @@
   overflow-x: hidden;
 
   .main-bgd-image {
+    position: absolute;
     width: 100%;
     height: 100%;
-    position: absolute;
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
@@ -143,7 +281,6 @@
   width: 100%;
   max-width: 100%;
   padding: 20px;
-  -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
   overflow: hidden;
   box-sizing: border-box;
@@ -153,15 +290,12 @@
   @media (max-width: 1300px) {
     padding: 1rem;
   }
-
   @media (max-width: 1024px) {
     padding: 1rem;
   }
-
   @media (max-width: 767px) {
     padding: 0.8rem;
   }
-
   @media (max-width: 480px) {
     padding: 0.5rem;
   }
@@ -209,57 +343,66 @@
   display: inline-block;
   width: 100%;
 
-  @media (max-width: 480px) {
-    .search {
-      padding-right: 100px;
+  .search {
+    width: 100%;
+    padding: 16px;
+    padding-right: 110px;
+    font-family: 'Inter', Arial, sans-serif;
+    color: $white;
+    background-color: rgba(0, 0, 0, 0.75);
+    border-radius: 16px;
+    border: none;
+    outline: none;
+    cursor: pointer;
+
+    @media (max-width: 480px) {
+      padding: 14px 100px 14px 14px;
+      font-size: 15px;
     }
   }
 
-  .search-btn {
-    content: '';
+  .search-btn,
+  .location-btn {
     position: absolute;
     top: -13px;
-    right: 10px;
     width: 40px;
     height: 40px;
-    background: url('../img/search.svg') no-repeat 50% 50%;
-    background-size: contain;
     transform: translateY(50%);
     border-radius: 10px;
     cursor: pointer;
-    border: none;
+    transition: all 0.2s;
 
     @media (max-width: 480px) {
       width: 36px;
       height: 36px;
+    }
+  }
+
+  .search-btn {
+    right: 10px;
+    background: url('../img/search.svg') no-repeat 50% 50%;
+    background-size: contain;
+    border: none;
+
+    @media (max-width: 480px) {
       right: 8px;
     }
   }
 
   .location-btn {
-    position: absolute;
-    top: -13px;
     right: 60px;
-    width: 40px;
-    height: 40px;
     background: rgba(255, 255, 255, 0.1);
-    transform: translateY(50%);
-    border-radius: 10px;
-    cursor: pointer;
     border: 1px solid rgba(255, 255, 255, 0.3);
     font-size: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s;
 
     &:hover {
       background: rgba(255, 255, 255, 0.2);
     }
 
     @media (max-width: 480px) {
-      width: 36px;
-      height: 36px;
       right: 52px;
       font-size: 18px;
     }
@@ -280,39 +423,31 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
   max-height: 300px;
   overflow-y: auto;
-}
 
-.history-title {
-  padding: 8px 16px;
-  font-size: 12px;
-  color: rgba($white, 0.6);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
+  .history-title {
+    padding: 8px 16px;
+    font-size: 12px;
+    color: rgba($white, 0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
 
-.history-item {
-  padding: 10px 16px;
-  color: $white;
-  cursor: pointer;
-  transition: background 0.2s;
+  .history-item {
+    padding: 10px 16px;
+    color: $white;
+    cursor: pointer;
+    transition: background 0.2s;
 
-  &:hover {
-    background: rgba(255, 255, 255, 0.1);
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
   }
 }
 
 .info {
+  @include gradient-panel;
   height: 100%;
   padding: 16px;
-  background: radial-gradient(
-    circle,
-    rgba(2, 0, 36, 1) 0%,
-    rgba(79, 29, 0, 1) 100%
-  );
-  background-size: cover;
-  border-radius: 25px;
-  opacity: 0.95;
-  box-shadow: 0 0 10px #fff;
 
   @media (max-width: 480px) {
     padding: 12px;
@@ -364,12 +499,21 @@
   }
 }
 
-.loading {
+.loading,
+.forecast-loading {
   text-align: center;
+  color: rgba($white, 0.8);
+  animation: pulse 1.5s ease-in-out infinite;
+
+  @media (max-width: 480px) {
+    font-size: 14px;
+  }
+}
+
+.loading {
   padding: 40px 20px;
   font-size: 18px;
   color: $white;
-  animation: pulse 1.5s ease-in-out infinite;
 
   @media (max-width: 480px) {
     padding: 30px 15px;
@@ -378,29 +522,18 @@
 }
 
 .forecast-loading {
-  text-align: center;
   padding: 20px;
   font-size: 16px;
-  color: rgba($white, 0.8);
-  animation: pulse 1.5s ease-in-out infinite;
 
   @media (max-width: 480px) {
     padding: 15px;
-    font-size: 14px;
   }
 }
 
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.6;
-  }
-}
+// ============================================================
+// VUE TRANSITIONS
+// ============================================================
 
-// Vue Transitions
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.3s ease;
@@ -419,56 +552,12 @@
   animation: dropdownOut 0.2s ease-in;
 }
 
-@keyframes dropdownIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes dropdownOut {
-  from {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-}
-
 .slide-left-enter-active {
   animation: slideLeftIn 0.4s ease-out;
 }
 
 .slide-left-leave-active {
   animation: slideLeftOut 0.3s ease-in;
-}
-
-@keyframes slideLeftIn {
-  from {
-    opacity: 0;
-    transform: translateX(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes slideLeftOut {
-  from {
-    opacity: 1;
-    transform: translateX(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateX(30px);
-  }
 }
 
 .slide-down-enter-active {
@@ -479,29 +568,24 @@
   animation: slideDownOut 0.2s ease-in;
 }
 
-@keyframes slideDownIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.slide-horizontal-enter-active,
+.slide-horizontal-leave-active {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-@keyframes slideDownOut {
-  from {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
+.slide-horizontal-enter-from {
+  opacity: 0;
+  transform: translateX(-30px);
 }
 
-// WeatherSummary.vue styles
+.slide-horizontal-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
+
+// ============================================================
+// WEATHER SUMMARY COMPONENT
+// ============================================================
 .summary {
   position: relative;
 }
@@ -654,7 +738,10 @@
   }
 }
 
-// Highlights.vue styles
+// ============================================================
+// HIGHLIGHTS COMPONENT
+// ============================================================
+
 .highlights {
   padding: 28px 16px 16px;
   background: radial-gradient(
@@ -898,7 +985,10 @@
   }
 }
 
-// HourlyForecast.vue styles
+// ============================================================
+// HOURLY FORECAST COMPONENT
+// ============================================================
+
 .hourly-forecast {
   width: 100%;
   max-width: 100%;
@@ -935,27 +1025,8 @@
   overflow-y: hidden;
   padding: 8px 0;
   scroll-behavior: smooth;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.3) rgba(0, 0, 0, 0.2);
   -webkit-overflow-scrolling: touch;
-
-  &::-webkit-scrollbar {
-    height: 8px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 4px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 4px;
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.5);
-    }
-  }
+  @include scrollbar-custom(rgba(255, 255, 255, 0.3));
 
   @media (max-width: 767px) {
     gap: 10px;
@@ -981,14 +1052,12 @@
   background: rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  transition: all 0.3s ease;
   cursor: pointer;
   backdrop-filter: blur(5px);
+  @include card-hover-effect;
 
   &:hover {
     background: rgba(255, 255, 255, 0.15);
-    transform: translateY(-4px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
   }
 }
 
@@ -1149,22 +1218,18 @@
   }
 }
 
-// WeatherForecast.vue styles
+// ============================================================
+// WEATHER FORECAST COMPONENT
+// ============================================================
+
 .forecast-section {
   width: 100%;
   margin-top: 16px;
 }
 
 .forecast-container {
+  @include gradient-panel;
   padding: 20px 16px 16px;
-  background: radial-gradient(
-    circle,
-    rgba(2, 0, 36, 1) 0%,
-    rgba(79, 29, 0, 1) 100%
-  );
-  border-radius: 25px;
-  opacity: 0.95;
-  box-shadow: 0 0 10px #fff;
 }
 
 .forecast-title {
@@ -1199,15 +1264,12 @@
   flex-direction: column;
   align-items: center;
   padding: 16px 8px;
-  background: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(10px);
+  @include glass-panel(0.3, 10px);
   border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  transition: all 0.3s ease;
   cursor: pointer;
+  @include card-hover-effect;
 
   &:hover {
-    transform: translateY(-2px);
     background: rgba(0, 0, 0, 0.4);
     box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
     border-color: rgba(255, 255, 255, 0.3);
@@ -1491,7 +1553,10 @@
   transform: translateX(30px);
 }
 
-// Footer.vue styles
+// ============================================================
+// FOOTER COMPONENT
+// ============================================================
+
 .footer {
   width: 100%;
   padding: 20px 0;
