@@ -147,7 +147,7 @@ header {
   left: 0;
   right: 0;
   z-index: 1001;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(20px);
   background: rgba(255, 247, 128, 0.2);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   padding: 10px 20px;
@@ -962,10 +962,6 @@ header {
   &-time {
     font-size: 13px;
     font-weight: 700;
-
-    @media (max-width: 1199px) {
-      font-size: 11px;
-    }
   }
 }
 
