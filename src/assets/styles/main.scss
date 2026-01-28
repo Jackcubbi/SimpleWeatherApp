@@ -140,38 +140,132 @@
 // APP LAYOUT & CORE COMPONENTS
 // ============================================================
 
-.favorites-toggle {
+// Header Component
+header {
   position: fixed;
-  top: 20px;
-  left: 20px;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1001;
+  backdrop-filter: blur(10px);
+  background: rgba(255, 247, 128, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 10px 20px;
+
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+    gap: 20px;
+
+    > div {
+      flex: 1;
+      display: flex;
+      align-items: center;
+
+      &:first-child {
+        justify-content: flex-start;
+        position: relative;
+      }
+
+      &:nth-child(2) {
+        justify-content: center;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      &:last-child {
+        justify-content: flex-end;
+      }
+    }
+
+    @media (max-width: 767px) {
+      flex-wrap: wrap;
+      gap: 10px;
+
+      > div {
+        &:first-child,
+        &:last-child {
+          flex: 0 0 auto;
+        }
+
+        &:nth-child(2) {
+          flex: 1 1 100%;
+          order: 3;
+        }
+      }
+    }
+  }
+
+  .header-title {
+    margin: 0;
+    color: $white;
+    font-size: 24px;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    text-align: center;
+
+    @media (max-width: 767px) {
+      font-size: 18px;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 16px;
+    }
+  }
+
+  .header-subtitle {
+    margin: 0;
+    color: rgba($white, 0.7);
+    font-size: 13px;
+    font-weight: 400;
+
+    @media (max-width: 767px) {
+      font-size: 11px;
+    }
+
+    @media (max-width: 480px) {
+      display: none;
+    }
+  }
+}
+
+.favorites-toggle {
   padding: 10px 16px;
-  background: rgba(255, 255, 255, 0.2);
+  @include glass-panel(0.2, 10px);
   border: 2px solid rgba(255, 255, 255, 0.4);
   border-radius: 25px;
   color: white;
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
-  z-index: 1000;
   transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
 
   &:hover {
     background: rgba(255, 255, 255, 0.3);
     border-color: rgba(255, 255, 255, 0.6);
+    transform: scale(1.05);
+  }
+
+  @media (max-width: 480px) {
+    padding: 8px 12px;
+    font-size: 14px;
   }
 }
 
 .favorites-panel {
-  position: fixed;
-  top: 80px;
-  left: 20px;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 12px;
+  min-width: 250px;
   max-width: 300px;
-  background: rgba(0, 0, 0, 0.9);
+  background: rgba(0, 0, 0, 0.95);
   border-radius: 12px;
   padding: 16px;
-  z-index: 999;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
   border: 1px solid rgba(255, 255, 255, 0.2);
 
   .favorites-title {
@@ -221,24 +315,19 @@
 }
 
 .unit-toggle {
-  position: fixed;
-  top: 20px;
-  right: 20px;
   width: 50px;
   height: 50px;
-  background: rgba(255, 255, 255, 0.2);
+  @include glass-panel(0.2, 10px);
   border: 2px solid rgba(255, 255, 255, 0.4);
   border-radius: 50%;
   color: white;
   font-size: 18px;
   font-weight: bold;
   cursor: pointer;
-  z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
 
   &:hover {
     background: rgba(255, 255, 255, 0.3);
@@ -249,16 +338,18 @@
   &:active {
     transform: scale(0.95);
   }
+
+  @media (max-width: 480px) {
+    width: 44px;
+    height: 44px;
+    font-size: 16px;
+  }
 }
 
 .page {
   position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
   width: 100%;
-  overflow-x: hidden;
+  min-height: 100vh;
 
   .main-bgd-image {
     position: absolute;
@@ -268,6 +359,7 @@
     background-position: center;
     background-size: cover;
     background-attachment: fixed;
+    background-color: rgba(0, 0, 0, 0.4);
     transition: ease-in-out 1s;
   }
 }
@@ -282,9 +374,8 @@
   max-width: 100%;
   padding: 20px;
   backdrop-filter: blur(4px);
-  overflow: hidden;
   box-sizing: border-box;
-  margin: 5rem 0;
+  margin: 8rem auto 5rem;
   border-radius: 20px;
 
   @media (max-width: 1300px) {
@@ -652,6 +743,7 @@
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        gap: 10px;
 
         @media (max-width: 1199px) {
           flex-direction: column;
@@ -662,6 +754,7 @@
       &-data {
         display: flex;
         align-items: center;
+        width: 100%;
 
         @media (max-width: 1199px) {
           width: 100%;
@@ -670,6 +763,7 @@
       }
 
       &-hint {
+        width: 100%;
         @media (max-width: 1199px) {
           width: 100%;
         }
@@ -774,6 +868,8 @@
 
 .highlight {
   width: 32%;
+  display: grid;
+  gap: 10px;
 
   @media (max-width: 575px) {
     width: 100%;
@@ -903,8 +999,7 @@
 }
 
 .card-small {
-  margin-top: 12px;
-  padding: 12px 16px;
+  padding: 15px;
   background-size: cover;
   border: 1px solid;
   border-radius: 8px;
@@ -916,7 +1011,6 @@
   &-info {
     display: flex;
     justify-content: space-between;
-    align-items: center;
 
     @media (max-width: 1199px) {
       flex-direction: column;
@@ -1561,7 +1655,7 @@
   width: 100%;
   padding: 20px 0;
   margin-top: auto;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(255, 247, 128, 0.2);
   backdrop-filter: blur(10px);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
