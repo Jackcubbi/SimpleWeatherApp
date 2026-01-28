@@ -11,25 +11,18 @@ import Humidity from './components/Humidity.vue';
 import WeatherForecast from './components/WeatherForecast.vue';
 import HourlyForecast from './components/HourlyForecast.vue';
 import Footer from './components/Footer.vue';
+import Header from './components/Header.vue';
 
 // Use weather store
 const weatherStore = useWeatherStore();
 
-// Local UI state (not in store)
+// Local UI state for search history only
 const showHistory = ref(false);
-const showFavorites = ref(false);
 
 // Select city from history
 function selectFromHistory(cityName) {
   weatherStore.city = cityName;
   showHistory.value = false;
-  weatherStore.getWeather();
-}
-
-// Select city from favorites
-function selectFromFavorites(cityName) {
-  weatherStore.city = cityName;
-  showFavorites.value = false;
   weatherStore.getWeather();
 }
 
@@ -49,43 +42,7 @@ onMounted(() => {
 <template>
   <!-- Main page wrapper -->
   <div class="page">
-    <!-- Favorites toggle button -->
-    <button
-      class="favorites-toggle"
-      :title="showFavorites ? 'Hide favorites' : 'Show favorites'"
-      @click="showFavorites = !showFavorites"
-    >
-      ★ {{ weatherStore.favorites.length }}
-    </button>
-
-    <!-- Favorites panel -->
-    <transition name="slide-down">
-      <div
-        v-if="showFavorites && weatherStore.favorites.length > 0"
-        class="favorites-panel"
-      >
-        <div class="favorites-title">Favorite Cities</div>
-        <div class="favorites-grid">
-          <button
-            v-for="(favCity, index) in weatherStore.favorites"
-            :key="index"
-            class="favorite-city-btn"
-            @click="selectFromFavorites(favCity)"
-          >
-            {{ favCity }}
-          </button>
-        </div>
-      </div>
-    </transition>
-
-    <!-- Unit toggle button -->
-    <button
-      class="unit-toggle"
-      :title="`Switch to ${weatherStore.isCelsius ? 'Fahrenheit' : 'Celsius'}`"
-      @click="weatherStore.toggleUnits"
-    >
-      {{ weatherStore.isCelsius ? '°F' : '°C' }}
-    </button>
+    <!-- Header with favorites and unit toggle -->
 
     <!-- Offline indicator -->
     <div v-if="weatherStore.isOffline" class="offline-banner">
@@ -98,6 +55,7 @@ onMounted(() => {
       class="main-bgd-image"
     ></div>
     <main class="main">
+      <Header />
       <!-- Main weather container -->
       <div class="container">
         <div class="laptop">
